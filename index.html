@@ -159,23 +159,25 @@
         .routine-days {
             display: flex;
             gap: 5px;
-            flex-wrap: wrap;
+            flex-wrap: nowrap; /* Forces a single row */
         }
 
         .routine-btn {
             background: var(--bg-color);
             color: var(--gold);
             border: 1px solid var(--gold);
-            padding: 8px 10px;
+            padding: 8px 0; /* Reduced padding to fit mobile */
             border-radius: 4px;
             cursor: pointer;
-            flex-grow: 1;
+            flex: 1; /* Makes them all strictly the exact same size */
             text-align: center;
             font-weight: bold;
             display: flex;
+            flex-direction: column; /* Stack text and badge on small screens */
             justify-content: center;
             align-items: center;
-            gap: 5px;
+            gap: 3px;
+            font-size: 13px; /* Slightly smaller text for fit */
         }
 
         .routine-btn:hover {
@@ -657,15 +659,19 @@
 
         // --- Weekly Routine Logic ---
         function renderRoutines() {
+            // Monday is 1, Sunday is 0. Array orders them Mon -> Sun
+            const dayOrder = [1, 2, 3, 4, 5, 6, 0]; 
+
             ["school", "holiday"].forEach(type => {
                 let container = document.getElementById(`${type}-routine-days`);
                 container.innerHTML = "";
-                for(let i=0; i<7; i++) {
+                
+                dayOrder.forEach(i => {
                     let btn = document.createElement("button");
                     btn.className = "routine-btn";
                     let count = appData.routines[type][i].length;
                     
-                    btn.innerHTML = `${dayNamesShort[i]}`;
+                    btn.innerHTML = `<span>${dayNamesShort[i]}</span>`;
                     if(count > 0) {
                         btn.innerHTML += `<span class="routine-badge">${count}</span>`;
                         btn.style.borderColor = "var(--gold)";
@@ -676,7 +682,7 @@
                     
                     btn.onclick = () => openRoutineModal(type, i);
                     container.appendChild(btn);
-                }
+                });
             });
         }
 
