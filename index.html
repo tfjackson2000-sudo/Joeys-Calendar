@@ -143,8 +143,56 @@
             text-overflow: ellipsis;
         }
 
-        /* Modal Overlay */
-        #modal-overlay {
+        /* Routine Section */
+        .routines-section {
+            margin-top: 30px;
+            padding: 15px;
+            background: var(--light-gray);
+            border-radius: 8px;
+            border: 1px solid #444;
+        }
+
+        .routine-group {
+            margin-bottom: 15px;
+        }
+
+        .routine-days {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .routine-btn {
+            background: var(--bg-color);
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            padding: 8px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            flex-grow: 1;
+            text-align: center;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .routine-btn:hover {
+            background: var(--gold);
+            color: var(--bg-color);
+        }
+
+        .routine-badge {
+            font-size: 11px;
+            background: var(--gold);
+            color: var(--bg-color);
+            border-radius: 50%;
+            padding: 2px 6px;
+        }
+
+        /* Modal Overlays */
+        .modal-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -152,7 +200,7 @@
             z-index: 1000;
         }
 
-        #modal {
+        .modal-box {
             position: fixed;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
@@ -186,6 +234,8 @@
             list-style: none;
             padding: 0;
             margin: 0 0 15px 0;
+            max-height: 250px;
+            overflow-y: auto;
         }
 
         .event-item {
@@ -311,6 +361,21 @@
         </div>
         <div class="calendar-grid" id="calendar-body">
             </div>
+
+        <div class="routines-section">
+            <h3 style="margin-top: 0;">Weekly Routines</h3>
+            <p style="font-size: 12px; color: #aaa; text-align: center; margin-top: -10px;">Select a day below to set activities that happen every week.</p>
+            
+            <div class="routine-group">
+                <h4 style="color: var(--text-color); margin: 0 0 5px 0;">School Week</h4>
+                <div class="routine-days" id="school-routine-days"></div>
+            </div>
+            
+            <div class="routine-group">
+                <h4 style="color: var(--text-color); margin: 0 0 5px 0;">Holiday Week</h4>
+                <div class="routine-days" id="holiday-routine-days"></div>
+            </div>
+        </div>
     </div>
 
     <div id="view-admin" class="view">
@@ -375,21 +440,40 @@
         </div>
     </div>
 
-    <div id="modal-overlay">
-        <div id="modal">
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal-box">
             <div class="modal-header">
                 <h3 id="modal-date-title" style="margin: 0;">Date</h3>
-                <button class="close-btn" onclick="closeModal()">&times;</button>
+                <button class="close-btn" onclick="closeModal('modal-overlay')">&times;</button>
             </div>
             
             <ul id="modal-event-list" class="event-list">
                 </ul>
 
             <div class="add-event-form">
-                <label style="color: var(--gold); font-size: 14px;">Add Activity:</label>
+                <label style="color: var(--gold); font-size: 14px;">Add Specific Activity:</label>
                 <select id="modal-activity-select">
                     </select>
-                <button onclick="addEventToDate()">Add to Day</button>
+                <button onclick="addEventToDate()">Add to this Day</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="routine-modal-overlay" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="routine-modal-title" style="margin: 0;">Routine</h3>
+                <button class="close-btn" onclick="closeModal('routine-modal-overlay')">&times;</button>
+            </div>
+            
+            <ul id="routine-event-list" class="event-list">
+                </ul>
+
+            <div class="add-event-form">
+                <label style="color: var(--gold); font-size: 14px;">Add to Routine:</label>
+                <select id="routine-activity-select">
+                    </select>
+                <button onclick="addRoutineEvent()">Add to Weekly Routine</button>
             </div>
         </div>
     </div>
@@ -398,6 +482,11 @@
         // --- State Data ---
         let currentDate = new Date();
         let selectedDateStr = "";
+        
+        let selectedRoutineType = ""; // 'school' or 'holiday'
+        let selectedRoutineDay = 0; // 0-6 (Sun-Sat)
+        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const dayNamesShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
         // Default Data
         const defaultData = {
@@ -412,15 +501,21 @@
                 schoolEnd: "",
                 holidayStart: "",
                 holidayEnd: ""
+            },
+            routines: {
+                school: {0:[], 1:[], 2:[], 3:[], 4:[], 5:[], 6:[]},
+                holiday: {0:[], 1:[], 2:[], 3:[], 4:[], 5:[], 6:[]}
             }
         };
 
         // Load from LocalStorage or use defaults
         let appData = JSON.parse(localStorage.getItem("joeysCalendar")) || defaultData;
         
+        // Ensure data structures exist for older saves
         if(!appData.events) appData.events = {};
         if(!appData.activities) appData.activities = defaultData.activities;
         if(!appData.settings) appData.settings = defaultData.settings;
+        if(!appData.routines) appData.routines = defaultData.routines;
 
         const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -428,6 +523,7 @@
         window.onload = () => {
             loadAdminSettings();
             renderCalendar();
+            renderRoutines();
             renderAdminActivities();
         };
 
@@ -448,6 +544,24 @@
             }
         }
 
+        // --- Utility ---
+        function isDateInRange(dateObj, startStr, endStr) {
+            if (!startStr || !endStr) return false;
+            let target = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate()).getTime();
+            
+            let sSplit = startStr.split('-');
+            let start = new Date(sSplit[0], sSplit[1]-1, sSplit[2]).getTime();
+            
+            let eSplit = endStr.split('-');
+            let end = new Date(eSplit[0], eSplit[1]-1, eSplit[2]).getTime();
+            
+            return target >= start && target <= end;
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+        }
+
         // --- Calendar Logic ---
         function changeMonth(dir) {
             currentDate.setMonth(currentDate.getMonth() + dir);
@@ -462,19 +576,6 @@
                 currentDate.setMonth(parseInt(parts[1]) - 1);
                 renderCalendar();
             }
-        }
-
-        function isDateInRange(dateObj, startStr, endStr) {
-            if (!startStr || !endStr) return false;
-            let target = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate()).getTime();
-            
-            let sSplit = startStr.split('-');
-            let start = new Date(sSplit[0], sSplit[1]-1, sSplit[2]).getTime();
-            
-            let eSplit = endStr.split('-');
-            let end = new Date(eSplit[0], eSplit[1]-1, eSplit[2]).getTime();
-            
-            return target >= start && target <= end;
         }
 
         function getDayColor(dateObj) {
@@ -496,10 +597,8 @@
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
             
-            // Update Headers and Picker
             document.getElementById("month-year-display").innerText = `${months[month]} ${year}`;
             
-            // Format for type="month" is YYYY-MM
             const paddedMonth = String(month + 1).padStart(2, '0');
             document.getElementById("month-picker").value = `${year}-${paddedMonth}`;
 
@@ -529,29 +628,126 @@
                 }
 
                 let dateStr = `${year}-${String(month+1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                let dayOfWeek = currentDayObj.getDay();
                 
+                let isHoliday = isDateInRange(currentDayObj, appData.settings.holidayStart, appData.settings.holidayEnd);
+                let isSchool = isDateInRange(currentDayObj, appData.settings.schoolStart, appData.settings.schoolEnd);
+
                 dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
                 
-                if (appData.events[dateStr]) {
-                    appData.events[dateStr].forEach(evt => {
-                        let evtDiv = document.createElement("div");
-                        evtDiv.className = "day-event-indicator";
-                        evtDiv.innerText = evt;
-                        dayDiv.appendChild(evtDiv);
-                    });
-                }
+                // Combine routines and specific date events
+                let dayRoutines = [];
+                if (isHoliday) dayRoutines = appData.routines.holiday[dayOfWeek] || [];
+                else if (isSchool) dayRoutines = appData.routines.school[dayOfWeek] || [];
+                
+                let specificEvents = appData.events[dateStr] || [];
+                let allEvents = [...dayRoutines, ...specificEvents];
 
-                dayDiv.onclick = () => openDayModal(dateStr, months[month], i, year);
+                allEvents.forEach(evt => {
+                    let evtDiv = document.createElement("div");
+                    evtDiv.className = "day-event-indicator";
+                    evtDiv.innerText = evt;
+                    dayDiv.appendChild(evtDiv);
+                });
+
+                dayDiv.onclick = () => openDayModal(dateStr, months[month], i, year, currentDayObj);
                 calendarBody.appendChild(dayDiv);
             }
         }
 
-        // --- Modal & Event Logic ---
-        function openDayModal(dateStr, monthName, dayNum, year) {
+        // --- Weekly Routine Logic ---
+        function renderRoutines() {
+            ["school", "holiday"].forEach(type => {
+                let container = document.getElementById(`${type}-routine-days`);
+                container.innerHTML = "";
+                for(let i=0; i<7; i++) {
+                    let btn = document.createElement("button");
+                    btn.className = "routine-btn";
+                    let count = appData.routines[type][i].length;
+                    
+                    btn.innerHTML = `${dayNamesShort[i]}`;
+                    if(count > 0) {
+                        btn.innerHTML += `<span class="routine-badge">${count}</span>`;
+                        btn.style.borderColor = "var(--gold)";
+                    } else {
+                        btn.style.borderColor = "#666";
+                        btn.style.color = "#aaa";
+                    }
+                    
+                    btn.onclick = () => openRoutineModal(type, i);
+                    container.appendChild(btn);
+                }
+            });
+        }
+
+        function openRoutineModal(type, dayIndex) {
+            selectedRoutineType = type;
+            selectedRoutineDay = dayIndex;
+            
+            let typeLabel = type === 'school' ? 'School Week' : 'Holiday Week';
+            document.getElementById("routine-modal-title").innerText = `${typeLabel} - ${dayNames[dayIndex]}`;
+            
+            renderRoutineEventsList();
+            
+            let select = document.getElementById("routine-activity-select");
+            select.innerHTML = "";
+            appData.activities.forEach(act => {
+                let opt = document.createElement("option");
+                opt.value = act;
+                opt.text = act;
+                select.appendChild(opt);
+            });
+
+            document.getElementById("routine-modal-overlay").style.display = "block";
+        }
+
+        function renderRoutineEventsList() {
+            let list = document.getElementById("routine-event-list");
+            list.innerHTML = "";
+            let routines = appData.routines[selectedRoutineType][selectedRoutineDay];
+            
+            if (routines.length === 0) {
+                list.innerHTML = "<li style='color: #aaa;'>No routine set for this day.</li>";
+                return;
+            }
+
+            routines.forEach((evt, index) => {
+                let li = document.createElement("li");
+                li.className = "event-item";
+                li.innerHTML = `
+                    <span>&#10227; ${evt}</span>
+                    <div class="event-actions">
+                        <button onclick="removeRoutineEvent(${index})" class="delete-btn">X</button>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        function addRoutineEvent() {
+            let val = document.getElementById("routine-activity-select").value;
+            if (!val) return;
+            appData.routines[selectedRoutineType][selectedRoutineDay].push(val);
+            saveData();
+            renderRoutineEventsList();
+            renderRoutines();
+            renderCalendar();
+        }
+
+        function removeRoutineEvent(index) {
+            appData.routines[selectedRoutineType][selectedRoutineDay].splice(index, 1);
+            saveData();
+            renderRoutineEventsList();
+            renderRoutines();
+            renderCalendar();
+        }
+
+        // --- Specific Date Modal Logic ---
+        function openDayModal(dateStr, monthName, dayNum, year, dateObj) {
             selectedDateStr = dateStr;
             document.getElementById("modal-date-title").innerText = `${monthName} ${dayNum}, ${year}`;
             
-            renderModalEvents();
+            renderModalEvents(dateObj);
             
             let select = document.getElementById("modal-activity-select");
             select.innerHTML = "";
@@ -565,18 +761,59 @@
             document.getElementById("modal-overlay").style.display = "block";
         }
 
-        function renderModalEvents() {
+        function renderModalEvents(dateObj) {
             let list = document.getElementById("modal-event-list");
             list.innerHTML = "";
             
-            let dayEvents = appData.events[selectedDateStr] || [];
+            let dayOfWeek = dateObj.getDay();
+            let isHoliday = isDateInRange(dateObj, appData.settings.holidayStart, appData.settings.holidayEnd);
+            let isSchool = isDateInRange(dateObj, appData.settings.schoolStart, appData.settings.schoolEnd);
             
-            if (dayEvents.length === 0) {
+            let routineEvents = [];
+            let routineLabel = "";
+            
+            if (isHoliday) {
+                routineEvents = appData.routines.holiday[dayOfWeek] || [];
+                routineLabel = "Holiday Routine";
+            } else if (isSchool) {
+                routineEvents = appData.routines.school[dayOfWeek] || [];
+                routineLabel = "School Routine";
+            }
+
+            let specificEvents = appData.events[selectedDateStr] || [];
+            
+            if (routineEvents.length === 0 && specificEvents.length === 0) {
                 list.innerHTML = "<li style='color: #aaa;'>No activities for this day.</li>";
                 return;
             }
 
-            dayEvents.forEach((evt, index) => {
+            // Render read-only routines first
+            if (routineEvents.length > 0) {
+                let header = document.createElement("li");
+                header.innerHTML = `<strong style="color:var(--gold); font-size:12px;">${routineLabel} (Edit in Weekly Routines)</strong>`;
+                header.style.background = "none";
+                header.style.padding = "5px 0";
+                list.appendChild(header);
+
+                routineEvents.forEach(evt => {
+                    let li = document.createElement("li");
+                    li.className = "event-item";
+                    li.style.borderLeft = "3px solid var(--gold)";
+                    li.innerHTML = `<span style="color:#ccc;">&#10227; ${evt}</span>`;
+                    list.appendChild(li);
+                });
+            }
+
+            // Render specific editable events
+            if (specificEvents.length > 0) {
+                 let header = document.createElement("li");
+                 header.innerHTML = `<strong style="color:var(--gold); font-size:12px;">Specific Date Activities</strong>`;
+                 header.style.background = "none";
+                 header.style.padding = "10px 0 5px 0";
+                 list.appendChild(header);
+            }
+
+            specificEvents.forEach((evt, index) => {
                 let li = document.createElement("li");
                 li.className = "event-item";
                 li.innerHTML = `
@@ -600,7 +837,11 @@
             }
             appData.events[selectedDateStr].push(val);
             saveData();
-            renderModalEvents();
+            
+            // Re-render modal to show new specific event
+            let parts = selectedDateStr.split('-');
+            let dObj = new Date(parts[0], parts[1]-1, parts[2]);
+            renderModalEvents(dObj);
             renderCalendar();
         }
 
@@ -610,23 +851,24 @@
                 delete appData.events[selectedDateStr];
             }
             saveData();
-            renderModalEvents();
+            
+            let parts = selectedDateStr.split('-');
+            let dObj = new Date(parts[0], parts[1]-1, parts[2]);
+            renderModalEvents(dObj);
             renderCalendar();
         }
 
         function editEvent(index) {
             let currentVal = appData.events[selectedDateStr][index];
-            let newVal = prompt("Edit your activity:", currentVal);
+            let newVal = prompt("Edit your specific activity:", currentVal);
             if (newVal !== null && newVal.trim() !== "") {
                 appData.events[selectedDateStr][index] = newVal.trim();
                 saveData();
-                renderModalEvents();
+                let parts = selectedDateStr.split('-');
+                let dObj = new Date(parts[0], parts[1]-1, parts[2]);
+                renderModalEvents(dObj);
                 renderCalendar();
             }
-        }
-
-        function closeModal() {
-            document.getElementById("modal-overlay").style.display = "none";
         }
 
         // --- Admin Logic ---
@@ -653,7 +895,7 @@
             
             saveData();
             alert("Admin settings saved successfully!");
-            renderCalendar(); // Re-render to reflect color changes immediately
+            renderCalendar(); 
         }
 
         function renderAdminActivities() {
