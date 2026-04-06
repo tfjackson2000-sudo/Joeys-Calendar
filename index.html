@@ -6,51 +6,76 @@
     <title>Joey's Calendar</title>
     <style>
         :root {
-            --bg-color: #000000;
+            --bg-color: #050505;
             --gold: #FFD700;
+            --gold-glow: rgba(255, 215, 0, 0.4);
             --dark-gold: #B8860B;
-            --light-gray: #333333;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
             --text-color: #FFFFFF;
+            --danger: #ff4d4d;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             margin: 0;
             padding: 0;
+            background-image: radial-gradient(circle at 50% 0%, #1a1500 0%, #050505 50%);
+            min-height: 100vh;
         }
 
-        h1, h2, h3 {
+        h1, h2, h3, h4 {
             color: var(--gold);
             text-align: center;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
 
         /* Tabs Navigation */
         .tabs {
             display: flex;
             justify-content: center;
-            background-color: var(--light-gray);
-            border-bottom: 2px solid var(--gold);
-            padding: 10px 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--glass-border);
         }
 
         .tab-btn {
-            background-color: transparent;
-            color: var(--gold);
-            border: 1px solid var(--gold);
-            padding: 10px 20px;
+            background: transparent;
+            color: #888;
+            border: none;
+            padding: 10px 25px;
             margin: 0 10px;
             cursor: pointer;
             font-size: 16px;
             font-weight: bold;
-            border-radius: 5px;
-            transition: 0.3s;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            position: relative;
         }
 
-        .tab-btn:hover, .tab-btn.active {
-            background-color: var(--gold);
+        .tab-btn.active {
             color: var(--bg-color);
+            background: var(--gold);
+            box-shadow: 0 0 15px var(--gold-glow);
         }
 
         /* Views */
@@ -59,10 +84,14 @@
             padding: 20px;
             max-width: 900px;
             margin: 0 auto;
+            animation: fadeIn 0.4s ease;
         }
 
-        .view.active {
-            display: block;
+        .view.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Calendar Controls */
@@ -70,135 +99,253 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 5px 15px;
         }
 
-        .calendar-controls button, input[type="date"], input[type="month"], input[type="color"], input[type="text"], select {
-            background-color: var(--light-gray);
+        .nav-btn {
+            background: transparent;
             color: var(--gold);
-            border: 1px solid var(--gold);
-            padding: 8px;
-            border-radius: 4px;
-        }
-
-        .calendar-controls button {
+            border: none;
+            font-size: 24px;
             cursor: pointer;
-            font-weight: bold;
+            padding: 5px 15px;
+            transition: transform 0.2s;
         }
 
-        .calendar-controls button:hover {
-            background-color: var(--gold);
-            color: var(--bg-color);
+        .nav-btn:hover { transform: scale(1.2); }
+
+        .date-picker-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+        }
+
+        #month-year-display {
+            margin: 0;
+            font-size: 22px;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        #month-year-display:hover { background: rgba(255,215,0,0.1); }
+
+        /* The hidden month picker that overlays the text */
+        #month-picker {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0;
+            cursor: pointer;
         }
 
         /* Calendar Grid */
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
+            gap: 8px;
         }
 
         .day-header {
             text-align: center;
-            color: var(--gold);
-            font-weight: bold;
+            color: #888;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             padding: 10px 0;
         }
 
         .calendar-day {
             min-height: 100px;
-            border: 1px solid var(--light-gray);
-            padding: 5px;
+            border: 1px solid var(--glass-border);
+            padding: 8px;
             cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
             position: relative;
-            transition: border-color 0.2s;
-            overflow: hidden;
-            border-radius: 5px;
         }
 
         .calendar-day:hover {
+            transform: translateY(-2px);
             border-color: var(--gold);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.1);
         }
 
         .calendar-day.today {
-            outline: 3px solid var(--gold);
-            outline-offset: -3px;
+            box-shadow: inset 0 0 0 2px var(--gold);
         }
 
         .day-number {
             font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
+            font-size: 16px;
+            margin-bottom: 8px;
+            display: inline-block;
+            background: rgba(0,0,0,0.5);
+            padding: 2px 8px;
+            border-radius: 4px;
         }
 
         .day-event-indicator {
-            font-size: 12px;
-            background-color: var(--gold);
-            color: var(--bg-color);
-            padding: 2px 4px;
-            border-radius: 3px;
-            margin-top: 2px;
+            font-size: 11px;
+            background: rgba(255, 215, 0, 0.15);
+            color: var(--gold);
+            border-left: 2px solid var(--gold);
+            padding: 4px 6px;
+            border-radius: 2px;
+            margin-top: 4px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            font-weight: 500;
         }
 
         /* Routine Section */
-        .routines-section {
-            margin-top: 30px;
-            padding: 15px;
-            background: var(--light-gray);
-            border-radius: 8px;
-            border: 1px solid #444;
-        }
-
-        .routine-group {
-            margin-bottom: 15px;
-        }
-
         .routine-days {
             display: flex;
-            gap: 5px;
-            flex-wrap: nowrap; /* Forces a single row */
+            gap: 8px;
+            flex-wrap: nowrap;
         }
 
         .routine-btn {
-            background: var(--bg-color);
-            color: var(--gold);
-            border: 1px solid var(--gold);
-            padding: 8px 0; /* Reduced padding to fit mobile */
-            border-radius: 4px;
+            background: rgba(0,0,0,0.3);
+            color: #aaa;
+            border: 1px solid var(--glass-border);
+            padding: 12px 0;
+            border-radius: 8px;
             cursor: pointer;
-            flex: 1; /* Makes them all strictly the exact same size */
+            flex: 1;
             text-align: center;
-            font-weight: bold;
+            font-weight: 600;
             display: flex;
-            flex-direction: column; /* Stack text and badge on small screens */
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            gap: 3px;
-            font-size: 13px; /* Slightly smaller text for fit */
+            gap: 5px;
+            font-size: 13px;
+            transition: all 0.3s ease;
         }
 
-        .routine-btn:hover {
-            background: var(--gold);
-            color: var(--bg-color);
+        .routine-btn.active-routine {
+            color: var(--gold);
+            border-color: var(--gold);
+            background: rgba(255, 215, 0, 0.05);
         }
+
+        .routine-btn:hover { background: rgba(255, 215, 0, 0.1); }
 
         .routine-badge {
             font-size: 11px;
             background: var(--gold);
             color: var(--bg-color);
-            border-radius: 50%;
-            padding: 2px 6px;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-weight: bold;
         }
 
-        /* Modal Overlays */
+        /* UI Elements & Inputs */
+        input[type="text"], select, input[type="date"] {
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: 1px solid var(--glass-border);
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus, select:focus, input[type="date"]:focus {
+            border-color: var(--gold);
+        }
+
+        .primary-btn {
+            background: var(--gold);
+            color: var(--bg-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .primary-btn:hover {
+            box-shadow: 0 0 15px var(--gold-glow);
+            transform: translateY(-1px);
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 18px;
+            transition: transform 0.2s;
+        }
+        .icon-btn:hover { transform: scale(1.2); }
+
+        /* Color Pickers */
+        .color-picker-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .color-picker-row:last-child { border-bottom: none; }
+
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 0;
+            background: transparent;
+        }
+        
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: 2px solid var(--gold); border-radius: 50%; }
+
+        /* Term Rows */
+        .term-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        /* Activity List */
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.3);
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border-left: 3px solid var(--gold);
+        }
+
+        /* Modals */
         .modal-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
             z-index: 1000;
         }
 
@@ -206,12 +353,13 @@
             position: fixed;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            background-color: #111;
-            border: 2px solid var(--gold);
-            padding: 20px;
+            background: var(--bg-color);
+            border: 1px solid var(--glass-border);
+            padding: 25px;
             width: 90%;
-            max-width: 400px;
-            border-radius: 8px;
+            max-width: 450px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(255,215,0,0.2);
             z-index: 1001;
         }
 
@@ -219,118 +367,19 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--light-gray);
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
-
-        .close-btn {
-            background: transparent;
-            color: var(--gold);
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .event-list {
             list-style: none;
             padding: 0;
-            margin: 0 0 15px 0;
-            max-height: 250px;
+            margin: 0 0 20px 0;
+            max-height: 300px;
             overflow-y: auto;
         }
 
-        .event-item {
-            display: flex;
-            justify-content: space-between;
-            background: var(--light-gray);
-            padding: 8px;
-            margin-bottom: 5px;
-            border-radius: 4px;
-        }
-
-        .event-actions button {
-            background: transparent;
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            cursor: pointer;
-            border-radius: 3px;
-            margin-left: 5px;
-        }
-
-        .event-actions button:hover {
-            background: var(--gold);
-            color: var(--bg-color);
-        }
-
-        .add-event-form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .add-event-form select, .add-event-form button {
-            padding: 8px;
-            border-radius: 4px;
-            border: 1px solid var(--gold);
-            background: var(--light-gray);
-            color: var(--gold);
-        }
-
-        .add-event-form button {
-            background: var(--gold);
-            color: var(--bg-color);
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        /* Admin Section */
-        .admin-section {
-            background: var(--light-gray);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #444;
-        }
-
-        .admin-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .activity-list {
-            margin-top: 10px;
-            padding-left: 20px;
-        }
-        
-        .activity-item {
-            display: flex;
-            justify-content: space-between;
-            max-width: 300px;
-            margin-bottom: 5px;
-        }
-        
-        .delete-btn {
-            color: #ff4d4d;
-            background: transparent;
-            border: 1px solid #ff4d4d;
-            cursor: pointer;
-            border-radius: 3px;
-        }
-        .delete-btn:hover { background: #ff4d4d; color: white; }
-
-        .date-picker-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
     </style>
 </head>
 <body>
@@ -341,15 +390,14 @@
     </div>
 
     <div id="view-calendar" class="view active">
-        <h1>Joey's Calendar</h1>
         
         <div class="calendar-controls">
-            <button onclick="changeMonth(-1)">&#9664; Prev</button>
+            <button class="nav-btn" onclick="changeMonth(-1)">❮</button>
             <div class="date-picker-container">
-                <h2 id="month-year-display" style="margin: 0 0 5px 0;"></h2>
+                <h2 id="month-year-display"></h2>
                 <input type="month" id="month-picker" onchange="jumpToDate()">
             </div>
-            <button onclick="changeMonth(1)">Next &#9654;</button>
+            <button class="nav-btn" onclick="changeMonth(1)">❯</button>
         </div>
 
         <div class="calendar-grid">
@@ -364,81 +412,65 @@
         <div class="calendar-grid" id="calendar-body">
             </div>
 
-        <div class="routines-section">
+        <div class="glass-card" style="margin-top: 30px;">
             <h3 style="margin-top: 0;">Weekly Routines</h3>
-            <p style="font-size: 12px; color: #aaa; text-align: center; margin-top: -10px;">Select a day below to set activities that happen every week.</p>
+            <p style="text-align: center; color: #888; font-size: 13px; margin-bottom: 20px;">Automate activities for every day of the week.</p>
             
-            <div class="routine-group">
-                <h4 style="color: var(--text-color); margin: 0 0 5px 0;">School Week</h4>
+            <div style="margin-bottom: 20px;">
+                <h4 style="color: white; text-align: left; margin: 0 0 10px 0; font-size: 14px;">School Term</h4>
                 <div class="routine-days" id="school-routine-days"></div>
             </div>
             
-            <div class="routine-group">
-                <h4 style="color: var(--text-color); margin: 0 0 5px 0;">Holiday Week</h4>
+            <div>
+                <h4 style="color: white; text-align: left; margin: 0 0 10px 0; font-size: 14px;">Holiday Term</h4>
                 <div class="routine-days" id="holiday-routine-days"></div>
             </div>
         </div>
     </div>
 
     <div id="view-admin" class="view">
-        <h1>Admin Settings</h1>
-
-        <div class="admin-section">
-            <h3>Day Colors</h3>
-            <div class="admin-grid">
-                <div class="form-group">
-                    <label>School Week Day Color:</label>
-                    <input type="color" id="col-school-week" value="#222222">
-                </div>
-                <div class="form-group">
-                    <label>School Weekend Day Color:</label>
-                    <input type="color" id="col-school-end" value="#333333">
-                </div>
-                <div class="form-group">
-                    <label>Holiday Week Day Color:</label>
-                    <input type="color" id="col-hol-week" value="#4A3B00">
-                </div>
-                <div class="form-group">
-                    <label>Holiday Weekend Day Color:</label>
-                    <input type="color" id="col-hol-end" value="#665200">
-                </div>
-            </div>
-        </div>
-
-        <div class="admin-section">
-            <h3>Periods</h3>
-            <div class="admin-grid">
-                <div class="form-group">
-                    <label>School Period Start:</label>
-                    <input type="date" id="school-start">
-                </div>
-                <div class="form-group">
-                    <label>School Period End:</label>
-                    <input type="date" id="school-end">
-                </div>
-                <div class="form-group">
-                    <label>Holiday Period Start:</label>
-                    <input type="date" id="holiday-start">
-                </div>
-                <div class="form-group">
-                    <label>Holiday Period End:</label>
-                    <input type="date" id="holiday-end">
-                </div>
-            </div>
-        </div>
-
-        <div class="admin-section">
-            <h3>Available Activities</h3>
-            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                <input type="text" id="new-activity" placeholder="E.g., Stretch, Run 5km" style="flex-grow: 1;">
-                <button class="tab-btn" onclick="addActivityDef()" style="margin:0;">Add Activity</button>
-            </div>
-            <ul id="activity-list" class="activity-list">
-                </ul>
-        </div>
         
-        <div style="text-align: center;">
-            <button class="tab-btn" onclick="saveAdminSettings()" style="background: var(--gold); color: var(--bg-color);">Save All Admin Settings</button>
+        <div class="glass-card">
+            <h3 style="margin-top:0;">Calendar Colors</h3>
+            <p style="text-align: center; color: #888; font-size: 13px;">Changes are saved immediately.</p>
+            
+            <div class="color-picker-row">
+                <span>School Weekday</span>
+                <input type="color" id="col-school-week" onchange="updateSetting('colSchoolWeek', this.value)">
+            </div>
+            <div class="color-picker-row">
+                <span>School Weekend</span>
+                <input type="color" id="col-school-end" onchange="updateSetting('colSchoolEnd', this.value)">
+            </div>
+            <div class="color-picker-row">
+                <span>Holiday Weekday</span>
+                <input type="color" id="col-hol-week" onchange="updateSetting('colHolWeek', this.value)">
+            </div>
+            <div class="color-picker-row">
+                <span>Holiday Weekend</span>
+                <input type="color" id="col-hol-end" onchange="updateSetting('colHolEnd', this.value)">
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <h3 style="margin-top:0;">Terms & Periods</h3>
+            
+            <h4 style="text-align: left; margin-bottom: 10px; color: white;">School Terms</h4>
+            <div id="school-periods-list"></div>
+            <button class="primary-btn" onclick="addPeriod('school')" style="width:100%; margin-bottom:20px;">+ Add School Term</button>
+
+            <h4 style="text-align: left; margin-bottom: 10px; color: white;">Holiday Terms</h4>
+            <div id="holiday-periods-list"></div>
+            <button class="primary-btn" onclick="addPeriod('holiday')" style="width:100%;">+ Add Holiday Term</button>
+        </div>
+
+        <div class="glass-card">
+            <h3 style="margin-top:0;">Available Activities</h3>
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <input type="text" id="new-activity" placeholder="e.g., Morning Run, Stretch...">
+                <button class="primary-btn" onclick="addActivityDef()">Add</button>
+            </div>
+            <div id="activity-list"></div>
         </div>
     </div>
 
@@ -446,17 +478,12 @@
         <div class="modal-box">
             <div class="modal-header">
                 <h3 id="modal-date-title" style="margin: 0;">Date</h3>
-                <button class="close-btn" onclick="closeModal('modal-overlay')">&times;</button>
+                <button class="icon-btn" onclick="closeModal('modal-overlay')" style="color:var(--gold);">✕</button>
             </div>
-            
-            <ul id="modal-event-list" class="event-list">
-                </ul>
-
-            <div class="add-event-form">
-                <label style="color: var(--gold); font-size: 14px;">Add Specific Activity:</label>
-                <select id="modal-activity-select">
-                    </select>
-                <button onclick="addEventToDate()">Add to this Day</button>
+            <ul id="modal-event-list" class="event-list"></ul>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <select id="modal-activity-select"></select>
+                <button class="primary-btn" onclick="addEventToDate()">Add to Date</button>
             </div>
         </div>
     </div>
@@ -465,44 +492,30 @@
         <div class="modal-box">
             <div class="modal-header">
                 <h3 id="routine-modal-title" style="margin: 0;">Routine</h3>
-                <button class="close-btn" onclick="closeModal('routine-modal-overlay')">&times;</button>
+                <button class="icon-btn" onclick="closeModal('routine-modal-overlay')" style="color:var(--gold);">✕</button>
             </div>
-            
-            <ul id="routine-event-list" class="event-list">
-                </ul>
-
-            <div class="add-event-form">
-                <label style="color: var(--gold); font-size: 14px;">Add to Routine:</label>
-                <select id="routine-activity-select">
-                    </select>
-                <button onclick="addRoutineEvent()">Add to Weekly Routine</button>
+            <ul id="routine-event-list" class="event-list"></ul>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <select id="routine-activity-select"></select>
+                <button class="primary-btn" onclick="addRoutineEvent()">Add to Routine</button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- State Data ---
+        // --- Data Setup & Migration ---
         let currentDate = new Date();
         let selectedDateStr = "";
-        
-        let selectedRoutineType = ""; // 'school' or 'holiday'
-        let selectedRoutineDay = 0; // 0-6 (Sun-Sat)
-        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        const dayNamesShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        let selectedRoutineType = ""; 
+        let selectedRoutineDay = 0; 
 
-        // Default Data
         const defaultData = {
             events: {}, 
             activities: ["Morning Stretch", "Cardio", "Weight Lifting", "Homework", "Rest Day"],
             settings: {
-                colSchoolWeek: "#222222",
-                colSchoolEnd: "#333333",
-                colHolWeek: "#4A3B00",
-                colHolEnd: "#665200",
-                schoolStart: "",
-                schoolEnd: "",
-                holidayStart: "",
-                holidayEnd: ""
+                colSchoolWeek: "#222222", colSchoolEnd: "#333333",
+                colHolWeek: "#4A3B00", colHolEnd: "#665200",
+                schoolPeriods: [], holidayPeriods: []
             },
             routines: {
                 school: {0:[], 1:[], 2:[], 3:[], 4:[], 5:[], 6:[]},
@@ -510,20 +523,29 @@
             }
         };
 
-        // Load from LocalStorage or use defaults
         let appData = JSON.parse(localStorage.getItem("joeysCalendar")) || defaultData;
         
-        // Ensure data structures exist for older saves
+        // Safety checks and migration from old format
         if(!appData.events) appData.events = {};
         if(!appData.activities) appData.activities = defaultData.activities;
         if(!appData.settings) appData.settings = defaultData.settings;
         if(!appData.routines) appData.routines = defaultData.routines;
+        
+        // Migrate old single periods to arrays
+        if(appData.settings.schoolStart && appData.settings.schoolPeriods === undefined) {
+            appData.settings.schoolPeriods = [{start: appData.settings.schoolStart, end: appData.settings.schoolEnd}];
+            appData.settings.holidayPeriods = [{start: appData.settings.holidayStart, end: appData.settings.holidayEnd}];
+        }
+        if(!appData.settings.schoolPeriods) appData.settings.schoolPeriods = [];
+        if(!appData.settings.holidayPeriods) appData.settings.holidayPeriods = [];
 
         const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const dayNamesShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-        // --- Initialization ---
+        // --- Init ---
         window.onload = () => {
-            loadAdminSettings();
+            loadAdminUI();
             renderCalendar();
             renderRoutines();
             renderAdminActivities();
@@ -533,66 +555,55 @@
             localStorage.setItem("joeysCalendar", JSON.stringify(appData));
         }
 
-        // --- Navigation ---
         function switchTab(tab) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            
             document.getElementById(`view-${tab}`).classList.add('active');
             event.target.classList.add('active');
-
-            if (tab === 'calendar') {
-                renderCalendar(); 
-            }
+            if (tab === 'calendar') renderCalendar(); 
         }
 
-        // --- Utility ---
-        function isDateInRange(dateObj, startStr, endStr) {
-            if (!startStr || !endStr) return false;
+        // --- Core Logic ---
+        function isDateInPeriods(dateObj, periods) {
+            if (!periods || periods.length === 0) return false;
             let target = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate()).getTime();
             
-            let sSplit = startStr.split('-');
-            let start = new Date(sSplit[0], sSplit[1]-1, sSplit[2]).getTime();
-            
-            let eSplit = endStr.split('-');
-            let end = new Date(eSplit[0], eSplit[1]-1, eSplit[2]).getTime();
-            
-            return target >= start && target <= end;
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = "none";
-        }
-
-        // --- Calendar Logic ---
-        function changeMonth(dir) {
-            currentDate.setMonth(currentDate.getMonth() + dir);
-            renderCalendar();
-        }
-
-        function jumpToDate() {
-            const pickerVal = document.getElementById("month-picker").value;
-            if (pickerVal) {
-                const parts = pickerVal.split('-');
-                currentDate.setFullYear(parseInt(parts[0]));
-                currentDate.setMonth(parseInt(parts[1]) - 1);
-                renderCalendar();
-            }
+            return periods.some(p => {
+                if(!p.start || !p.end) return false;
+                let s = p.start.split('-');
+                let e = p.end.split('-');
+                let start = new Date(s[0], s[1]-1, s[2]).getTime();
+                let end = new Date(e[0], e[1]-1, e[2]).getTime();
+                return target >= start && target <= end;
+            });
         }
 
         function getDayColor(dateObj) {
             let dayOfWeek = dateObj.getDay();
             let isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
             
-            let isHoliday = isDateInRange(dateObj, appData.settings.holidayStart, appData.settings.holidayEnd);
-            let isSchool = isDateInRange(dateObj, appData.settings.schoolStart, appData.settings.schoolEnd);
-
-            if (isHoliday) {
+            if (isDateInPeriods(dateObj, appData.settings.holidayPeriods)) {
                 return isWeekend ? appData.settings.colHolEnd : appData.settings.colHolWeek;
-            } else if (isSchool) {
+            } else if (isDateInPeriods(dateObj, appData.settings.schoolPeriods)) {
                 return isWeekend ? appData.settings.colSchoolEnd : appData.settings.colSchoolWeek;
             }
-            return "#111111"; 
+            return "rgba(0,0,0,0.5)"; // Default empty color
+        }
+
+        // --- Calendar Rendering ---
+        function changeMonth(dir) {
+            currentDate.setMonth(currentDate.getMonth() + dir);
+            renderCalendar();
+        }
+
+        function jumpToDate() {
+            const val = document.getElementById("month-picker").value;
+            if (val) {
+                const parts = val.split('-');
+                currentDate.setFullYear(parseInt(parts[0]));
+                currentDate.setMonth(parseInt(parts[1]) - 1);
+                renderCalendar();
+            }
         }
 
         function renderCalendar() {
@@ -600,24 +611,19 @@
             const month = currentDate.getMonth();
             
             document.getElementById("month-year-display").innerText = `${months[month]} ${year}`;
-            
-            const paddedMonth = String(month + 1).padStart(2, '0');
-            document.getElementById("month-picker").value = `${year}-${paddedMonth}`;
+            document.getElementById("month-picker").value = `${year}-${String(month + 1).padStart(2, '0')}`;
 
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const today = new Date();
 
-            const calendarBody = document.getElementById("calendar-body");
-            calendarBody.innerHTML = "";
+            const body = document.getElementById("calendar-body");
+            body.innerHTML = "";
 
-            // Empty slots
             for (let i = 0; i < firstDay; i++) {
-                let emptyDiv = document.createElement("div");
-                calendarBody.appendChild(emptyDiv);
+                body.appendChild(document.createElement("div"));
             }
 
-            // Days of the month
             for (let i = 1; i <= daysInMonth; i++) {
                 let dayDiv = document.createElement("div");
                 dayDiv.className = "calendar-day";
@@ -632,53 +638,44 @@
                 let dateStr = `${year}-${String(month+1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
                 let dayOfWeek = currentDayObj.getDay();
                 
-                let isHoliday = isDateInRange(currentDayObj, appData.settings.holidayStart, appData.settings.holidayEnd);
-                let isSchool = isDateInRange(currentDayObj, appData.settings.schoolStart, appData.settings.schoolEnd);
-
                 dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
                 
-                // Combine routines and specific date events
                 let dayRoutines = [];
-                if (isHoliday) dayRoutines = appData.routines.holiday[dayOfWeek] || [];
-                else if (isSchool) dayRoutines = appData.routines.school[dayOfWeek] || [];
+                if (isDateInPeriods(currentDayObj, appData.settings.holidayPeriods)) {
+                    dayRoutines = appData.routines.holiday[dayOfWeek] || [];
+                } else if (isDateInPeriods(currentDayObj, appData.settings.schoolPeriods)) {
+                    dayRoutines = appData.routines.school[dayOfWeek] || [];
+                }
                 
-                let specificEvents = appData.events[dateStr] || [];
-                let allEvents = [...dayRoutines, ...specificEvents];
+                let allEvents = [...dayRoutines, ...(appData.events[dateStr] || [])];
 
                 allEvents.forEach(evt => {
-                    let evtDiv = document.createElement("div");
-                    evtDiv.className = "day-event-indicator";
-                    evtDiv.innerText = evt;
-                    dayDiv.appendChild(evtDiv);
+                    let eDiv = document.createElement("div");
+                    eDiv.className = "day-event-indicator";
+                    eDiv.innerText = evt;
+                    dayDiv.appendChild(eDiv);
                 });
 
                 dayDiv.onclick = () => openDayModal(dateStr, months[month], i, year, currentDayObj);
-                calendarBody.appendChild(dayDiv);
+                body.appendChild(dayDiv);
             }
         }
 
-        // --- Weekly Routine Logic ---
+        // --- Weekly Routines UI ---
         function renderRoutines() {
-            // Monday is 1, Sunday is 0. Array orders them Mon -> Sun
-            const dayOrder = [1, 2, 3, 4, 5, 6, 0]; 
-
+            const dayOrder = [1, 2, 3, 4, 5, 6, 0]; // Mon-Sun
             ["school", "holiday"].forEach(type => {
                 let container = document.getElementById(`${type}-routine-days`);
                 container.innerHTML = "";
-                
                 dayOrder.forEach(i => {
                     let btn = document.createElement("button");
                     btn.className = "routine-btn";
                     let count = appData.routines[type][i].length;
                     
+                    if(count > 0) btn.classList.add("active-routine");
+                    
                     btn.innerHTML = `<span>${dayNamesShort[i]}</span>`;
-                    if(count > 0) {
-                        btn.innerHTML += `<span class="routine-badge">${count}</span>`;
-                        btn.style.borderColor = "var(--gold)";
-                    } else {
-                        btn.style.borderColor = "#666";
-                        btn.style.color = "#aaa";
-                    }
+                    if(count > 0) btn.innerHTML += `<span class="routine-badge">${count}</span>`;
                     
                     btn.onclick = () => openRoutineModal(type, i);
                     container.appendChild(btn);
@@ -686,24 +683,15 @@
             });
         }
 
+        // --- Modals ---
+        function closeModal(id) { document.getElementById(id).style.display = "none"; }
+
         function openRoutineModal(type, dayIndex) {
             selectedRoutineType = type;
             selectedRoutineDay = dayIndex;
-            
-            let typeLabel = type === 'school' ? 'School Week' : 'Holiday Week';
-            document.getElementById("routine-modal-title").innerText = `${typeLabel} - ${dayNames[dayIndex]}`;
-            
+            document.getElementById("routine-modal-title").innerText = `${type === 'school' ? 'School' : 'Holiday'} - ${dayNames[dayIndex]}`;
             renderRoutineEventsList();
-            
-            let select = document.getElementById("routine-activity-select");
-            select.innerHTML = "";
-            appData.activities.forEach(act => {
-                let opt = document.createElement("option");
-                opt.value = act;
-                opt.text = act;
-                select.appendChild(opt);
-            });
-
+            populateSelect("routine-activity-select");
             document.getElementById("routine-modal-overlay").style.display = "block";
         }
 
@@ -711,230 +699,162 @@
             let list = document.getElementById("routine-event-list");
             list.innerHTML = "";
             let routines = appData.routines[selectedRoutineType][selectedRoutineDay];
+            if (routines.length === 0) return list.innerHTML = "<li style='color:#aaa;'>No routines set.</li>";
             
-            if (routines.length === 0) {
-                list.innerHTML = "<li style='color: #aaa;'>No routine set for this day.</li>";
-                return;
-            }
-
-            routines.forEach((evt, index) => {
+            routines.forEach((evt, i) => {
                 let li = document.createElement("li");
-                li.className = "event-item";
-                li.innerHTML = `
-                    <span>&#10227; ${evt}</span>
-                    <div class="event-actions">
-                        <button onclick="removeRoutineEvent(${index})" class="delete-btn">X</button>
-                    </div>
-                `;
+                li.className = "activity-item";
+                li.innerHTML = `<span>↻ ${evt}</span> <button class="icon-btn" onclick="removeRoutineEvent(${i})">🗑️</button>`;
                 list.appendChild(li);
             });
         }
 
-        function addRoutineEvent() {
-            let val = document.getElementById("routine-activity-select").value;
-            if (!val) return;
-            appData.routines[selectedRoutineType][selectedRoutineDay].push(val);
-            saveData();
-            renderRoutineEventsList();
-            renderRoutines();
-            renderCalendar();
-        }
-
-        function removeRoutineEvent(index) {
-            appData.routines[selectedRoutineType][selectedRoutineDay].splice(index, 1);
-            saveData();
-            renderRoutineEventsList();
-            renderRoutines();
-            renderCalendar();
-        }
-
-        // --- Specific Date Modal Logic ---
-        function openDayModal(dateStr, monthName, dayNum, year, dateObj) {
+        function openDayModal(dateStr, mName, dNum, yr, dObj) {
             selectedDateStr = dateStr;
-            document.getElementById("modal-date-title").innerText = `${monthName} ${dayNum}, ${year}`;
-            
-            renderModalEvents(dateObj);
-            
-            let select = document.getElementById("modal-activity-select");
-            select.innerHTML = "";
-            appData.activities.forEach(act => {
-                let opt = document.createElement("option");
-                opt.value = act;
-                opt.text = act;
-                select.appendChild(opt);
-            });
-
+            document.getElementById("modal-date-title").innerText = `${mName} ${dNum}, ${yr}`;
+            renderModalEvents(dObj);
+            populateSelect("modal-activity-select");
             document.getElementById("modal-overlay").style.display = "block";
         }
 
-        function renderModalEvents(dateObj) {
+        function renderModalEvents(dObj) {
             let list = document.getElementById("modal-event-list");
             list.innerHTML = "";
+            let dWk = dObj.getDay();
             
-            let dayOfWeek = dateObj.getDay();
-            let isHoliday = isDateInRange(dateObj, appData.settings.holidayStart, appData.settings.holidayEnd);
-            let isSchool = isDateInRange(dateObj, appData.settings.schoolStart, appData.settings.schoolEnd);
+            let rEvts = [];
+            if (isDateInPeriods(dObj, appData.settings.holidayPeriods)) rEvts = appData.routines.holiday[dWk] || [];
+            else if (isDateInPeriods(dObj, appData.settings.schoolPeriods)) rEvts = appData.routines.school[dWk] || [];
             
-            let routineEvents = [];
-            let routineLabel = "";
+            let sEvts = appData.events[selectedDateStr] || [];
             
-            if (isHoliday) {
-                routineEvents = appData.routines.holiday[dayOfWeek] || [];
-                routineLabel = "Holiday Routine";
-            } else if (isSchool) {
-                routineEvents = appData.routines.school[dayOfWeek] || [];
-                routineLabel = "School Routine";
-            }
+            if (rEvts.length===0 && sEvts.length===0) return list.innerHTML = "<li style='color:#aaa;'>Free day!</li>";
 
-            let specificEvents = appData.events[selectedDateStr] || [];
-            
-            if (routineEvents.length === 0 && specificEvents.length === 0) {
-                list.innerHTML = "<li style='color: #aaa;'>No activities for this day.</li>";
-                return;
-            }
-
-            // Render read-only routines first
-            if (routineEvents.length > 0) {
-                let header = document.createElement("li");
-                header.innerHTML = `<strong style="color:var(--gold); font-size:12px;">${routineLabel} (Edit in Weekly Routines)</strong>`;
-                header.style.background = "none";
-                header.style.padding = "5px 0";
-                list.appendChild(header);
-
-                routineEvents.forEach(evt => {
-                    let li = document.createElement("li");
-                    li.className = "event-item";
-                    li.style.borderLeft = "3px solid var(--gold)";
-                    li.innerHTML = `<span style="color:#ccc;">&#10227; ${evt}</span>`;
-                    list.appendChild(li);
-                });
-            }
-
-            // Render specific editable events
-            if (specificEvents.length > 0) {
-                 let header = document.createElement("li");
-                 header.innerHTML = `<strong style="color:var(--gold); font-size:12px;">Specific Date Activities</strong>`;
-                 header.style.background = "none";
-                 header.style.padding = "10px 0 5px 0";
-                 list.appendChild(header);
-            }
-
-            specificEvents.forEach((evt, index) => {
+            rEvts.forEach(evt => {
                 let li = document.createElement("li");
-                li.className = "event-item";
-                li.innerHTML = `
-                    <span>${evt}</span>
-                    <div class="event-actions">
-                        <button onclick="editEvent(${index})">Edit</button>
-                        <button onclick="removeEvent(${index})" class="delete-btn">X</button>
-                    </div>
-                `;
+                li.className = "activity-item";
+                li.style.borderLeftColor = "#888";
+                li.innerHTML = `<span style="color:#aaa;">↻ ${evt}</span>`;
+                list.appendChild(li);
+            });
+
+            sEvts.forEach((evt, i) => {
+                let li = document.createElement("li");
+                li.className = "activity-item";
+                li.innerHTML = `<span>${evt}</span> <button class="icon-btn" onclick="removeEvent(${i})">🗑️</button>`;
                 list.appendChild(li);
             });
         }
 
+        // --- Data Mutations (Auto-save) ---
+        function populateSelect(id) {
+            let sel = document.getElementById(id);
+            sel.innerHTML = "";
+            appData.activities.forEach(a => sel.add(new Option(a, a)));
+        }
+
+        function addRoutineEvent() {
+            let v = document.getElementById("routine-activity-select").value;
+            if(v) { appData.routines[selectedRoutineType][selectedRoutineDay].push(v); saveData(); renderRoutineEventsList(); renderRoutines(); renderCalendar(); }
+        }
+        function removeRoutineEvent(i) { appData.routines[selectedRoutineType][selectedRoutineDay].splice(i,1); saveData(); renderRoutineEventsList(); renderRoutines(); renderCalendar(); }
+
         function addEventToDate() {
-            let select = document.getElementById("modal-activity-select");
-            let val = select.value;
-            if (!val) return;
-
-            if (!appData.events[selectedDateStr]) {
-                appData.events[selectedDateStr] = [];
+            let v = document.getElementById("modal-activity-select").value;
+            if(v) {
+                if(!appData.events[selectedDateStr]) appData.events[selectedDateStr] = [];
+                appData.events[selectedDateStr].push(v); saveData();
+                let p = selectedDateStr.split('-');
+                renderModalEvents(new Date(p[0], p[1]-1, p[2])); renderCalendar();
             }
-            appData.events[selectedDateStr].push(val);
+        }
+        function removeEvent(i) {
+            appData.events[selectedDateStr].splice(i,1); 
+            if(appData.events[selectedDateStr].length===0) delete appData.events[selectedDateStr];
             saveData();
-            
-            // Re-render modal to show new specific event
-            let parts = selectedDateStr.split('-');
-            let dObj = new Date(parts[0], parts[1]-1, parts[2]);
-            renderModalEvents(dObj);
+            let p = selectedDateStr.split('-');
+            renderModalEvents(new Date(p[0], p[1]-1, p[2])); renderCalendar();
+        }
+
+        // --- Admin UI ---
+        function updateSetting(key, val) {
+            appData.settings[key] = val;
+            saveData();
             renderCalendar();
         }
 
-        function removeEvent(index) {
-            appData.events[selectedDateStr].splice(index, 1);
-            if(appData.events[selectedDateStr].length === 0) {
-                delete appData.events[selectedDateStr];
-            }
-            saveData();
-            
-            let parts = selectedDateStr.split('-');
-            let dObj = new Date(parts[0], parts[1]-1, parts[2]);
-            renderModalEvents(dObj);
-            renderCalendar();
-        }
-
-        function editEvent(index) {
-            let currentVal = appData.events[selectedDateStr][index];
-            let newVal = prompt("Edit your specific activity:", currentVal);
-            if (newVal !== null && newVal.trim() !== "") {
-                appData.events[selectedDateStr][index] = newVal.trim();
-                saveData();
-                let parts = selectedDateStr.split('-');
-                let dObj = new Date(parts[0], parts[1]-1, parts[2]);
-                renderModalEvents(dObj);
-                renderCalendar();
-            }
-        }
-
-        // --- Admin Logic ---
-        function loadAdminSettings() {
+        function loadAdminUI() {
             document.getElementById("col-school-week").value = appData.settings.colSchoolWeek;
             document.getElementById("col-school-end").value = appData.settings.colSchoolEnd;
             document.getElementById("col-hol-week").value = appData.settings.colHolWeek;
             document.getElementById("col-hol-end").value = appData.settings.colHolEnd;
-            document.getElementById("school-start").value = appData.settings.schoolStart;
-            document.getElementById("school-end").value = appData.settings.schoolEnd;
-            document.getElementById("holiday-start").value = appData.settings.holidayStart;
-            document.getElementById("holiday-end").value = appData.settings.holidayEnd;
+            renderPeriodsList('school');
+            renderPeriodsList('holiday');
         }
 
-        function saveAdminSettings() {
-            appData.settings.colSchoolWeek = document.getElementById("col-school-week").value;
-            appData.settings.colSchoolEnd = document.getElementById("col-school-end").value;
-            appData.settings.colHolWeek = document.getElementById("col-hol-week").value;
-            appData.settings.colHolEnd = document.getElementById("col-hol-end").value;
-            appData.settings.schoolStart = document.getElementById("school-start").value;
-            appData.settings.schoolEnd = document.getElementById("school-end").value;
-            appData.settings.holidayStart = document.getElementById("holiday-start").value;
-            appData.settings.holidayEnd = document.getElementById("holiday-end").value;
+        function renderPeriodsList(type) {
+            let list = document.getElementById(`${type}-periods-list`);
+            list.innerHTML = "";
+            let arr = appData.settings[`${type}Periods`];
             
+            arr.forEach((p, i) => {
+                let row = document.createElement("div");
+                row.className = "term-row";
+                row.innerHTML = `
+                    <input type="date" value="${p.start}" onchange="updatePeriod('${type}', ${i}, 'start', this.value)">
+                    <span style="color:#888;">to</span>
+                    <input type="date" value="${p.end}" onchange="updatePeriod('${type}', ${i}, 'end', this.value)">
+                    <button class="icon-btn" onclick="removePeriod('${type}', ${i})">🗑️</button>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        function addPeriod(type) {
+            appData.settings[`${type}Periods`].push({start: "", end: ""});
             saveData();
-            alert("Admin settings saved successfully!");
-            renderCalendar(); 
+            renderPeriodsList(type);
+        }
+
+        function updatePeriod(type, index, field, value) {
+            appData.settings[`${type}Periods`][index][field] = value;
+            saveData();
+            renderCalendar();
+        }
+
+        function removePeriod(type, index) {
+            appData.settings[`${type}Periods`].splice(index, 1);
+            saveData();
+            renderPeriodsList(type);
+            renderCalendar();
         }
 
         function renderAdminActivities() {
             let list = document.getElementById("activity-list");
             list.innerHTML = "";
-            appData.activities.forEach((act, index) => {
-                let li = document.createElement("li");
+            appData.activities.forEach((act, i) => {
+                let li = document.createElement("div");
                 li.className = "activity-item";
-                li.innerHTML = `
-                    <span style="color: var(--gold);">${act}</span>
-                    <button class="delete-btn" onclick="removeActivityDef(${index})">Remove</button>
-                `;
+                li.innerHTML = `<span>${act}</span> <button class="icon-btn" onclick="removeActivityDef(${i})">🗑️</button>`;
                 list.appendChild(li);
             });
         }
 
         function addActivityDef() {
             let input = document.getElementById("new-activity");
-            let val = input.value.trim();
-            if (val && !appData.activities.includes(val)) {
-                appData.activities.push(val);
+            let v = input.value.trim();
+            if (v && !appData.activities.includes(v)) {
+                appData.activities.push(v);
                 input.value = "";
                 saveData();
                 renderAdminActivities();
             }
         }
 
-        function removeActivityDef(index) {
-            if(confirm("Remove this activity from the dropdown options?")) {
-                appData.activities.splice(index, 1);
-                saveData();
-                renderAdminActivities();
-            }
+        function removeActivityDef(i) {
+            appData.activities.splice(i, 1);
+            saveData();
+            renderAdminActivities();
         }
     </script>
 </body>
