@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joey's Calendar</title>
+    <style>
+        :root {
+            --bg-color: #000000;
+            --gold: #FFD700;
+            --dark-gold: #B8860B;
+            --light-gray: #333333;
+            --text-color: #FFFFFF;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1, h2, h3 {
+            color: var(--gold);
+            text-align: center;
+        }
+
+        /* Tabs Navigation */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            background-color: var(--light-gray);
+            border-bottom: 2px solid var(--gold);
+            padding: 10px 0;
+        }
+
+        .tab-btn {
+            background-color: transparent;
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            padding: 10px 20px;
+            margin: 0 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .tab-btn:hover, .tab-btn.active {
+            background-color: var(--gold);
+            color: var(--bg-color);
+        }
+
+        /* Views */
+        .view {
+            display: none;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        /* Calendar Controls */
+        .calendar-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-controls select, .calendar-controls button, input[type="date"], input[type="color"], input[type="text"] {
+            background-color: var(--light-gray);
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .calendar-controls button {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .calendar-controls button:hover {
+            background-color: var(--gold);
+            color: var(--bg-color);
+        }
+
+        /* Calendar Grid */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .day-header {
+            text-align: center;
+            color: var(--gold);
+            font-weight: bold;
+            padding: 10px 0;
+        }
+
+        .calendar-day {
+            min-height: 100px;
+            border: 1px solid var(--light-gray);
+            padding: 5px;
+            cursor: pointer;
+            position: relative;
+            transition: border-color 0.2s;
+            overflow: hidden;
+            border-radius: 5px;
+        }
+
+        .calendar-day:hover {
+            border-color: var(--gold);
+        }
+
+        .calendar-day.today {
+            outline: 3px solid var(--gold);
+            outline-offset: -3px;
+        }
+
+        .day-number {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .day-event-indicator {
+            font-size: 12px;
+            background-color: var(--gold);
+            color: var(--bg-color);
+            padding: 2px 4px;
+            border-radius: 3px;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Modal Overlay */
+        #modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }
+
+        #modal {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #111;
+            border: 2px solid var(--gold);
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 8px;
+            z-index: 1001;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--light-gray);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .close-btn {
+            background: transparent;
+            color: var(--gold);
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .event-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 15px 0;
+        }
+
+        .event-item {
+            display: flex;
+            justify-content: space-between;
+            background: var(--light-gray);
+            padding: 8px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+        }
+
+        .event-actions button {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            cursor: pointer;
+            border-radius: 3px;
+            margin-left: 5px;
+        }
+
+        .event-actions button:hover {
+            background: var(--gold);
+            color: var(--bg-color);
+        }
+
+        .add-event-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .add-event-form select, .add-event-form button {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid var(--gold);
+            background: var(--light-gray);
+            color: var(--gold);
+        }
+
+        .add-event-form button {
+            background: var(--gold);
+            color: var(--bg-color);
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Admin Section */
+        .admin-section {
+            background: var(--light-gray);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #444;
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .activity-list {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+        
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            max-width: 300px;
+            margin-bottom: 5px;
+        }
+        
+        .delete-btn {
+            color: #ff4d4d;
+            background: transparent;
+            border: 1px solid #ff4d4d;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .delete-btn:hover { background: #ff4d4d; color: white; }
+
+    </style>
+</head>
+<body>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('calendar')">Calendar</button>
+        <button class="tab-btn" onclick="switchTab('admin')">Admin</button>
+    </div>
+
+    <div id="view-calendar" class="view active">
+        <h1>Joey's Calendar</h1>
+        
+        <div class="calendar-controls">
+            <button onclick="changeMonth(-1)">&#9664; Prev</button>
+            <h2 id="month-year-display" style="margin: 0;"></h2>
+            <div>
+                <select id="month-select" onchange="jumpToDate()"></select>
+                <select id="year-select" onchange="jumpToDate()"></select>
+            </div>
+            <button onclick="changeMonth(1)">Next &#9654;</button>
+        </div>
+
+        <div class="calendar-grid">
+            <div class="day-header">Sun</div>
+            <div class="day-header">Mon</div>
+            <div class="day-header">Tue</div>
+            <div class="day-header">Wed</div>
+            <div class="day-header">Thu</div>
+            <div class="day-header">Fri</div>
+            <div class="day-header">Sat</div>
+        </div>
+        <div class="calendar-grid" id="calendar-body">
+            </div>
+    </div>
+
+    <div id="view-admin" class="view">
+        <h1>Admin Settings</h1>
+
+        <div class="admin-section">
+            <h3>Day Colors</h3>
+            <div class="admin-grid">
+                <div class="form-group">
+                    <label>School Week Day Color:</label>
+                    <input type="color" id="col-school-week" value="#222222">
+                </div>
+                <div class="form-group">
+                    <label>School Weekend Day Color:</label>
+                    <input type="color" id="col-school-end" value="#333333">
+                </div>
+                <div class="form-group">
+                    <label>Holiday Week Day Color:</label>
+                    <input type="color" id="col-hol-week" value="#4A3B00">
+                </div>
+                <div class="form-group">
+                    <label>Holiday Weekend Day Color:</label>
+                    <input type="color" id="col-hol-end" value="#665200">
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-section">
+            <h3>Periods</h3>
+            <div class="admin-grid">
+                <div class="form-group">
+                    <label>School Period Start:</label>
+                    <input type="date" id="school-start">
+                </div>
+                <div class="form-group">
+                    <label>School Period End:</label>
+                    <input type="date" id="school-end">
+                </div>
+                <div class="form-group">
+                    <label>Holiday Period Start:</label>
+                    <input type="date" id="holiday-start">
+                </div>
+                <div class="form-group">
+                    <label>Holiday Period End:</label>
+                    <input type="date" id="holiday-end">
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-section">
+            <h3>Available Activities</h3>
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <input type="text" id="new-activity" placeholder="E.g., Stretch, Run 5km" style="flex-grow: 1;">
+                <button class="tab-btn" onclick="addActivityDef()" style="margin:0;">Add Activity</button>
+            </div>
+            <ul id="activity-list" class="activity-list">
+                </ul>
+        </div>
+        
+        <div style="text-align: center;">
+            <button class="tab-btn" onclick="saveAdminSettings()" style="background: var(--gold); color: var(--bg-color);">Save All Admin Settings</button>
+        </div>
+    </div>
+
+    <div id="modal-overlay">
+        <div id="modal">
+            <div class="modal-header">
+                <h3 id="modal-date-title" style="margin: 0;">Date</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            
+            <ul id="modal-event-list" class="event-list">
+                </ul>
+
+            <div class="add-event-form">
+                <label style="color: var(--gold); font-size: 14px;">Add Activity:</label>
+                <select id="modal-activity-select">
+                    </select>
+                <button onclick="addEventToDate()">Add to Day</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- State Data ---
+        let currentDate = new Date();
+        let selectedDateStr = "";
+
+        // Default Data
+        const defaultData = {
+            events: {}, // Format: {"2026-04-06": ["Stretch", "Pushups"]}
+            activities: ["Morning Stretch", "Cardio", "Weight Lifting", "Homework", "Rest Day"],
+            settings: {
+                colSchoolWeek: "#222222",
+                colSchoolEnd: "#333333",
+                colHolWeek: "#4A3B00",
+                colHolEnd: "#665200",
+                schoolStart: "",
+                schoolEnd: "",
+                holidayStart: "",
+                holidayEnd: ""
+            }
+        };
+
+        // Load from LocalStorage or use defaults
+        let appData = JSON.parse(localStorage.getItem("joeysCalendar")) || defaultData;
+        
+        // Ensure missing structure is added if updating from old version
+        if(!appData.events) appData.events = {};
+        if(!appData.activities) appData.activities = defaultData.activities;
+        if(!appData.settings) appData.settings = defaultData.settings;
+
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        // --- Initialization ---
+        window.onload = () => {
+            populateSelectors();
+            loadAdminSettings();
+            renderCalendar();
+            renderAdminActivities();
+        };
+
+        function saveData() {
+            localStorage.setItem("joeysCalendar", JSON.stringify(appData));
+        }
+
+        // --- Navigation ---
+        function switchTab(tab) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(`view-${tab}`).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tab === 'calendar') {
+                renderCalendar(); // Refresh calendar to apply potential new colors
+            }
+        }
+
+        // --- Calendar Logic ---
+        function populateSelectors() {
+            const monthSel = document.getElementById("month-select");
+            const yearSel = document.getElementById("year-select");
+            
+            months.forEach((m, i) => {
+                let opt = document.createElement("option");
+                opt.value = i;
+                opt.text = m;
+                monthSel.add(opt);
+            });
+
+            const currentYear = new Date().getFullYear();
+            for (let i = currentYear - 5; i <= currentYear + 5; i++) {
+                let opt = document.createElement("option");
+                opt.value = i;
+                opt.text = i;
+                yearSel.add(opt);
+            }
+        }
+
+        function changeMonth(dir) {
+            currentDate.setMonth(currentDate.getMonth() + dir);
+            renderCalendar();
+        }
+
+        function jumpToDate() {
+            const m = document.getElementById("month-select").value;
+            const y = document.getElementById("year-select").value;
+            currentDate.setMonth(m);
+            currentDate.setFullYear(y);
+            renderCalendar();
+        }
+
+        function isDateInRange(dateObj, startStr, endStr) {
+            if (!startStr || !endStr) return false;
+            let target = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate()).getTime();
+            
+            let sSplit = startStr.split('-');
+            let start = new Date(sSplit[0], sSplit[1]-1, sSplit[2]).getTime();
+            
+            let eSplit = endStr.split('-');
+            let end = new Date(eSplit[0], eSplit[1]-1, eSplit[2]).getTime();
+            
+            return target >= start && target <= end;
+        }
+
+        function getDayColor(dateObj) {
+            let dayOfWeek = dateObj.getDay();
+            let isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+            
+            let isHoliday = isDateInRange(dateObj, appData.settings.holidayStart, appData.settings.holidayEnd);
+            let isSchool = isDateInRange(dateObj, appData.settings.schoolStart, appData.settings.schoolEnd);
+
+            if (isHoliday) {
+                return isWeekend ? appData.settings.colHolEnd : appData.settings.colHolWeek;
+            } else if (isSchool) {
+                return isWeekend ? appData.settings.colSchoolEnd : appData.settings.colSchoolWeek;
+            }
+            // Default background if no period assigned
+            return "#111111"; 
+        }
+
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            document.getElementById("month-year-display").innerText = `${months[month]} ${year}`;
+            document.getElementById("month-select").value = month;
+            document.getElementById("year-select").value = year;
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+
+            const calendarBody = document.getElementById("calendar-body");
+            calendarBody.innerHTML = "";
+
+            // Empty slots for previous month
+            for (let i = 0; i < firstDay; i++) {
+                let emptyDiv = document.createElement("div");
+                calendarBody.appendChild(emptyDiv);
+            }
+
+            // Days of the month
+            for (let i = 1; i <= daysInMonth; i++) {
+                let dayDiv = document.createElement("div");
+                dayDiv.className = "calendar-day";
+                
+                let currentDayObj = new Date(year, month, i);
+                
+                // Set Background Color based on Admin settings
+                dayDiv.style.backgroundColor = getDayColor(currentDayObj);
+
+                // Check if it's today
+                if (year === today.getFullYear() && month === today.getMonth() && i === today.getDate()) {
+                    dayDiv.classList.add("today");
+                }
+
+                // Format string YYYY-MM-DD
+                let dateStr = `${year}-${String(month+1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                
+                dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
+                
+                // Add event indicators
+                if (appData.events[dateStr]) {
+                    appData.events[dateStr].forEach(evt => {
+                        let evtDiv = document.createElement("div");
+                        evtDiv.className = "day-event-indicator";
+                        evtDiv.innerText = evt;
+                        dayDiv.appendChild(evtDiv);
+                    });
+                }
+
+                dayDiv.onclick = () => openDayModal(dateStr, months[month], i, year);
+                calendarBody.appendChild(dayDiv);
+            }
+        }
+
+        // --- Modal & Event Logic ---
+        function openDayModal(dateStr, monthName, dayNum, year) {
+            selectedDateStr = dateStr;
+            document.getElementById("modal-date-title").innerText = `${monthName} ${dayNum}, ${year}`;
+            
+            renderModalEvents();
+            
+            // Populate Dropdown
+            let select = document.getElementById("modal-activity-select");
+            select.innerHTML = "";
+            appData.activities.forEach(act => {
+                let opt = document.createElement("option");
+                opt.value = act;
+                opt.text = act;
+                select.appendChild(opt);
+            });
+
+            document.getElementById("modal-overlay").style.display = "block";
+        }
+
+        function renderModalEvents() {
+            let list = document.getElementById("modal-event-list");
+            list.innerHTML = "";
+            
+            let dayEvents = appData.events[selectedDateStr] || [];
+            
+            if (dayEvents.length === 0) {
+                list.innerHTML = "<li style='color: #aaa;'>No activities for this day.</li>";
+                return;
+            }
+
+            dayEvents.forEach((evt, index) => {
+                let li = document.createElement("li");
+                li.className = "event-item";
+                li.innerHTML = `
+                    <span>${evt}</span>
+                    <div class="event-actions">
+                        <button onclick="editEvent(${index})">Edit</button>
+                        <button onclick="removeEvent(${index})" class="delete-btn">X</button>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        function addEventToDate() {
+            let select = document.getElementById("modal-activity-select");
+            let val = select.value;
+            if (!val) return;
+
+            if (!appData.events[selectedDateStr]) {
+                appData.events[selectedDateStr] = [];
+            }
+            appData.events[selectedDateStr].push(val);
+            saveData();
+            renderModalEvents();
+            renderCalendar();
+        }
+
+        function removeEvent(index) {
+            appData.events[selectedDateStr].splice(index, 1);
+            if(appData.events[selectedDateStr].length === 0) {
+                delete appData.events[selectedDateStr];
+            }
+            saveData();
+            renderModalEvents();
+            renderCalendar();
+        }
+
+        function editEvent(index) {
+            let currentVal = appData.events[selectedDateStr][index];
+            let newVal = prompt("Edit your activity:", currentVal);
+            if (newVal !== null && newVal.trim() !== "") {
+                appData.events[selectedDateStr][index] = newVal.trim();
+                saveData();
+                renderModalEvents();
+                renderCalendar();
+            }
+        }
+
+        function closeModal() {
+            document.getElementById("modal-overlay").style.display = "none";
+        }
+
+        // --- Admin Logic ---
+        function loadAdminSettings() {
+            document.getElementById("col-school-week").value = appData.settings.colSchoolWeek;
+            document.getElementById("col-school-end").value = appData.settings.colSchoolEnd;
+            document.getElementById("col-hol-week").value = appData.settings.colHolWeek;
+            document.getElementById("col-hol-end").value = appData.settings.colHolEnd;
+            document.getElementById("school-start").value = appData.settings.schoolStart;
+            document.getElementById("school-end").value = appData.settings.schoolEnd;
+            document.getElementById("holiday-start").value = appData.settings.holidayStart;
+            document.getElementById("holiday-end").value = appData.settings.holidayEnd;
+        }
+
+        function saveAdminSettings() {
+            appData.settings.colSchoolWeek = document.getElementById("col-school-week").value;
+            appData.settings.colSchoolEnd = document.getElementById("col-school-end").value;
+            appData.settings.colHolWeek = document.getElementById("col-hol-week").value;
+            appData.settings.colHolEnd = document.getElementById("col-hol-end").value;
+            appData.settings.schoolStart = document.getElementById("school-start").value;
+            appData.settings.schoolEnd = document.getElementById("school-end").value;
+            appData.settings.holidayStart = document.getElementById("holiday-start").value;
+            appData.settings.holidayEnd = document.getElementById("holiday-end").value;
+            
+            saveData();
+            alert("Admin settings saved successfully!");
+        }
+
+        function renderAdminActivities() {
+            let list = document.getElementById("activity-list");
+            list.innerHTML = "";
+            appData.activities.forEach((act, index) => {
+                let li = document.createElement("li");
+                li.className = "activity-item";
+                li.innerHTML = `
+                    <span style="color: var(--gold);">${act}</span>
+                    <button class="delete-btn" onclick="removeActivityDef(${index})">Remove</button>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        function addActivityDef() {
+            let input = document.getElementById("new-activity");
+            let val = input.value.trim();
+            if (val && !appData.activities.includes(val)) {
+                appData.activities.push(val);
+                input.value = "";
+                saveData();
+                renderAdminActivities();
+            }
+        }
+
+        function removeActivityDef(index) {
+            if(confirm("Remove this activity from the dropdown options?")) {
+                appData.activities.splice(index, 1);
+                saveData();
+                renderAdminActivities();
+            }
+        }
+    </script>
+</body>
+</html>
