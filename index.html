@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -636,7 +635,7 @@
             <ul id="modal-event-list" class="event-list"></ul>
             
             <div style="display: flex; flex-direction: column; gap: 15px;">
-                <button class="secondary-btn" onclick="openGroupModal('date')">+ Add Sub-Heading & Activities</button>
+                <button class="secondary-btn" onclick="openGroupModal('date')">+ Group Existing Activities</button>
                 <div style="height: 1px; background: var(--glass-border); margin: 10px 0;"></div>
                 <select id="modal-activity-select"></select>
                 <button class="primary-btn" onclick="addEventToDate()">Add Single Activity</button>
@@ -656,7 +655,7 @@
             <ul id="routine-event-list" class="event-list"></ul>
             
             <div style="display: flex; flex-direction: column; gap: 15px;">
-                <button class="secondary-btn" onclick="openGroupModal('routine')">+ Add Sub-Heading & Activities</button>
+                <button class="secondary-btn" onclick="openGroupModal('routine')">+ Group Existing Activities</button>
                 <div style="height: 1px; background: var(--glass-border); margin: 10px 0;"></div>
                 <select id="routine-activity-select"></select>
                 <button class="primary-btn" onclick="addRoutineEvent()">Add Single Activity</button>
@@ -664,16 +663,18 @@
         </div>
     </div>
 
-    <!-- NEW: GROUP CREATOR MODAL -->
+    <!-- GROUP CREATOR MODAL -->
     <div id="group-modal-overlay" class="modal-overlay" style="z-index: 1010;">
         <div class="modal-box">
             <div class="modal-header">
-                <h3 style="margin: 0; font-size: 26px; color:var(--gold);">Create Group</h3>
+                <h3 style="margin: 0; font-size: 26px; color:var(--gold);">Group Activities</h3>
                 <button class="icon-btn" onclick="closeModal('group-modal-overlay')" style="color:white;">✕</button>
             </div>
             
+            <p style="color:#aaa; font-size:15px; margin-top:-10px;">Select the activities currently on this day to pull them under a new heading.</p>
+
             <div style="display: flex; flex-direction: column; gap: 15px;">
-                <input type="text" id="group-heading-input" placeholder="Heading (e.g. Morning:)">
+                <input type="text" id="group-heading-input" placeholder="Heading Name (e.g. Morning:)">
                 
                 <div style="max-height: 35vh; overflow-y: auto; background: rgba(0,0,0,0.5); border-radius: 12px; border: 1px solid var(--glass-border); margin: 10px 0;">
                     <div id="group-activities-list">
@@ -681,7 +682,7 @@
                     </div>
                 </div>
 
-                <button class="primary-btn" onclick="saveGroup()" style="background:var(--gold); color:black;">Save Group</button>
+                <button class="primary-btn" onclick="saveGroup()" style="background:var(--gold); color:black;">Create Group</button>
             </div>
         </div>
     </div>
@@ -725,7 +726,6 @@
         if(!appData.settings.holidayPeriods) appData.settings.holidayPeriods = [];
 
         const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        // Internal JS logic uses 0=Sun, 1=Mon. 
         const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const dayNamesShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -1006,16 +1006,32 @@
             let list = document.getElementById("group-activities-list");
             list.innerHTML = "";
             
-            appData.activities.forEach((act, i) => {
-                let label = document.createElement("label");
-                label.className = "group-creation-label";
-                label.innerHTML = `
-                    <input type="checkbox" class="neon-checkbox" id="group-act-${i}" value="${act}" style="width: 28px; height: 28px; margin-right: 15px;">
-                    <span style="font-size: 20px; font-weight: bold; flex-grow: 1;">${act}</span>
-                `;
-                list.appendChild(label);
+            let sourceArray = [];
+            if (type === 'date') {
+                sourceArray = appData.events[selectedDateStr] || [];
+            } else {
+                sourceArray = appData.routines[selectedRoutineType][selectedRoutineDay] || [];
+            }
+
+            let hasItems = false;
+            sourceArray.forEach((evt, i) => {
+                if (!evt.startsWith(HEADING_PREFIX)) {
+                    hasItems = true;
+                    let displayText = evt.replace(DONE_PREFIX, "");
+                    let label = document.createElement("label");
+                    label.className = "group-creation-label";
+                    label.innerHTML = `
+                        <input type="checkbox" class="neon-checkbox" value="${i}" style="width: 28px; height: 28px; margin-right: 15px;">
+                        <span style="font-size: 20px; font-weight: bold; flex-grow: 1;">${displayText}</span>
+                    `;
+                    list.appendChild(label);
+                }
             });
             
+            if (!hasItems) {
+                list.innerHTML = "<div style='padding:20px; color:#aaa; text-align:center; font-size:18px;'>No individual activities to group. Add some activities first!</div>";
+            }
+
             document.getElementById("group-modal-overlay").style.display = "block";
         }
 
@@ -1023,23 +1039,49 @@
             let headingText = document.getElementById("group-heading-input").value.trim();
             if(!headingText) headingText = "Group";
             
-            let selectedActs = [];
             let checkboxes = document.querySelectorAll("#group-activities-list input[type='checkbox']:checked");
-            checkboxes.forEach(cb => selectedActs.push(cb.value));
+            
+            let sourceArray = [];
+            if(groupTargetType === 'date') {
+                sourceArray = appData.events[selectedDateStr] || [];
+            } else {
+                sourceArray = appData.routines[selectedRoutineType][selectedRoutineDay] || [];
+            }
+
+            if (checkboxes.length === 0) {
+                // If nothing is selected, just append the heading at the end
+                if(groupTargetType === 'date' && !appData.events[selectedDateStr]) {
+                    appData.events[selectedDateStr] = [];
+                    sourceArray = appData.events[selectedDateStr];
+                }
+                sourceArray.push(HEADING_PREFIX + headingText);
+            } else {
+                // Grab selected indices and sort lowest to highest
+                let selectedIndices = Array.from(checkboxes).map(cb => parseInt(cb.value)).sort((a,b) => a - b);
+                
+                // The heading goes exactly where the very first selected item used to be
+                let insertIndex = selectedIndices[0]; 
+
+                // Pull out the exact items so we don't lose ticks
+                let extractedItems = selectedIndices.map(i => sourceArray[i]);
+
+                // Remove them from the original list (backwards to avoid shifting issues)
+                for (let i = selectedIndices.length - 1; i >= 0; i--) {
+                    sourceArray.splice(selectedIndices[i], 1);
+                }
+
+                // Insert the heading and the pulled items back into that spot
+                let itemsToInsert = [HEADING_PREFIX + headingText, ...extractedItems];
+                sourceArray.splice(insertIndex, 0, ...itemsToInsert);
+            }
             
             if(groupTargetType === 'date') {
-                if(!appData.events[selectedDateStr]) appData.events[selectedDateStr] = [];
-                appData.events[selectedDateStr].push(HEADING_PREFIX + headingText);
-                selectedActs.forEach(act => appData.events[selectedDateStr].push(act));
-                
+                appData.events[selectedDateStr] = sourceArray;
                 let p = selectedDateStr.split('-');
                 renderModalEvents(new Date(p[0], p[1]-1, p[2]));
                 renderCalendar();
-                
             } else if (groupTargetType === 'routine') {
-                appData.routines[selectedRoutineType][selectedRoutineDay].push(HEADING_PREFIX + headingText);
-                selectedActs.forEach(act => appData.routines[selectedRoutineType][selectedRoutineDay].push(act));
-                
+                appData.routines[selectedRoutineType][selectedRoutineDay] = sourceArray;
                 renderRoutineEventsList(); 
                 renderRoutines(); 
                 renderCalendar();
