@@ -2,16 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Joey's Calendar</title>
     <style>
         :root {
             --bg-color: #000000;
             --gold: #FFD700;
             --text-color: #FFFFFF;
-            --glass-bg: rgba(20, 20, 20, 0.7);
             --glass-border: rgba(255, 255, 255, 0.2);
-            --white-glow: rgba(255, 255, 255, 0.5);
+            --white-glow: rgba(255, 255, 255, 0.6);
             --danger: #ff4d4d;
         }
 
@@ -22,70 +21,60 @@
             margin: 0;
             padding: 0;
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
 
         h1, h2, h3, h4 {
             color: var(--text-color);
             text-align: center;
-            font-weight: 800;
+            font-weight: 900;
             letter-spacing: 2px;
-            text-shadow: 0 0 15px var(--white-glow);
+            text-shadow: 0 0 20px var(--white-glow);
+            margin-top: 0;
         }
 
-        h1 { font-size: 32px; margin-top: 30px; }
-
-        /* Glassmorphism Cards */
-        .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(255,255,255,0.05);
-        }
+        h1 { font-size: 36px; padding-top: 30px; }
 
         /* Tabs Navigation */
         .tabs {
             display: flex;
             justify-content: center;
-            background: rgba(0,0,0,0.9);
-            backdrop-filter: blur(15px);
-            padding: 20px 0;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(20px);
+            padding: 25px 0;
             position: sticky;
             top: 0;
             z-index: 100;
             border-bottom: 2px solid var(--glass-border);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.9);
+            box-shadow: 0 10px 30px rgba(0,0,0,1);
         }
 
         .tab-btn {
             background: transparent;
             color: var(--text-color);
             border: 2px solid var(--glass-border);
-            padding: 12px 30px;
+            padding: 15px 35px;
             margin: 0 10px;
             cursor: pointer;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 40px;
+            font-size: 20px;
+            font-weight: 800;
+            border-radius: 50px;
             transition: all 0.3s ease;
-            box-shadow: 0 0 10px rgba(255,255,255,0.1);
+            box-shadow: 0 0 15px rgba(255,255,255,0.1);
         }
 
         .tab-btn.active {
             color: var(--bg-color);
             background: var(--text-color);
             border-color: var(--text-color);
-            box-shadow: 0 0 25px var(--white-glow);
+            box-shadow: 0 0 30px var(--white-glow);
             transform: scale(1.05);
         }
 
         /* Views */
         .view {
             display: none;
-            padding: 20px;
+            padding: 25px 15px;
             max-width: 1000px;
             margin: 0 auto;
             animation: fadeIn 0.4s ease;
@@ -94,8 +83,18 @@
         .view.active { display: block; }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: rgba(15, 15, 15, 0.8);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px 20px;
+            margin-bottom: 35px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9), inset 0 0 25px rgba(255,255,255,0.05);
         }
 
         /* Calendar Controls */
@@ -103,26 +102,26 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 40px;
-            padding: 10px 20px;
-            box-shadow: 0 0 20px rgba(255,255,255,0.05);
+            margin-bottom: 35px;
+            background: rgba(20,20,20,0.9);
+            border: 2px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 10px 25px;
+            box-shadow: 0 0 25px rgba(255,255,255,0.05);
         }
 
         .nav-btn {
             background: transparent;
             color: var(--text-color);
             border: none;
-            font-size: 32px;
+            font-size: 36px;
             cursor: pointer;
             padding: 10px 20px;
             transition: all 0.2s;
-            text-shadow: 0 0 10px var(--white-glow);
+            text-shadow: 0 0 15px var(--white-glow);
         }
 
-        .nav-btn:hover { transform: scale(1.2); color: var(--gold); text-shadow: 0 0 15px var(--gold); }
+        .nav-btn:hover { transform: scale(1.2); }
 
         .date-picker-container {
             position: relative;
@@ -134,19 +133,17 @@
 
         #month-year-display {
             margin: 0;
-            font-size: 26px;
+            font-size: 28px;
             cursor: pointer;
-            padding: 15px 25px;
-            border-radius: 12px;
+            padding: 15px 30px;
+            border-radius: 15px;
             transition: all 0.3s;
             background: rgba(255,255,255,0.05);
-            border: 1px solid transparent;
         }
 
         #month-year-display:hover { 
-            background: rgba(255,255,255,0.1); 
-            border-color: var(--glass-border);
-            box-shadow: 0 0 15px var(--white-glow);
+            box-shadow: 0 0 20px var(--white-glow);
+            background: rgba(255,255,255,0.15);
         }
 
         #month-picker {
@@ -160,44 +157,41 @@
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
+            gap: 12px;
         }
 
         .day-header {
             text-align: center;
             color: var(--text-color);
-            font-size: 16px;
-            font-weight: 800;
+            font-size: 18px;
+            font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 2px;
             padding: 15px 0;
-            text-shadow: 0 0 10px rgba(255,255,255,0.4);
+            text-shadow: 0 0 15px rgba(255,255,255,0.6);
         }
 
         .calendar-day {
-            min-height: 140px;
-            background-color: rgba(10, 10, 10, 0.8);
+            min-height: 160px;
+            background-color: var(--bg-color); /* Always black inside */
             border: 2px solid #333;
-            padding: 10px;
+            padding: 12px;
             cursor: pointer;
-            border-radius: 12px;
-            transition: all 0.2s ease;
+            border-radius: 15px;
             position: relative;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
             display: flex;
             flex-direction: column;
+            transition: transform 0.2s;
         }
 
-        .calendar-day:hover {
-            transform: scale(1.02);
-            z-index: 10;
-        }
+        .calendar-day:active { transform: scale(0.95); }
 
-        /* Today's Special Gold Fill Override */
+        /* Today Override - Solid Gold */
         .calendar-day.today {
             background: var(--gold) !important;
-            border-color: #FFF !important;
-            box-shadow: 0 0 40px var(--gold), inset 0 0 20px rgba(255,255,255,0.8) !important;
+            border: 2px solid #FFF !important;
+            box-shadow: 0 0 50px var(--gold), inset 0 0 30px rgba(255,255,255,0.8) !important;
+            z-index: 2;
         }
 
         .calendar-day.today .day-number {
@@ -205,66 +199,82 @@
             background: transparent !important;
             text-shadow: none !important;
             font-weight: 900;
-            font-size: 24px;
+            font-size: 28px;
         }
 
         .calendar-day.today .day-event-indicator {
-            background: rgba(0,0,0,0.9) !important;
+            background: var(--bg-color) !important;
             color: var(--text-color) !important;
-            border: 1px solid rgba(255,255,255,0.3) !important;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+
+        .calendar-day.today .day-heading-indicator {
+            color: var(--bg-color) !important;
+            text-shadow: none !important;
         }
 
         .day-number {
-            font-weight: 800;
-            font-size: 20px;
-            margin-bottom: 10px;
+            font-weight: 900;
+            font-size: 22px;
+            margin-bottom: 12px;
             display: inline-block;
             color: var(--text-color);
-            text-shadow: 0 0 8px rgba(255,255,255,0.5);
-            background: rgba(0,0,0,0.6);
-            padding: 4px 10px;
-            border-radius: 6px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.8);
+            background: rgba(30,30,30,0.8);
+            padding: 5px 12px;
+            border-radius: 8px;
             align-self: flex-start;
         }
 
         .day-event-indicator {
-            font-size: 13px;
-            background: rgba(255, 255, 255, 0.1);
+            font-size: 15px;
+            background: rgba(255, 255, 255, 0.15);
             color: var(--text-color);
             border: 1px solid var(--glass-border);
-            padding: 6px 8px;
-            border-radius: 6px;
-            margin-top: 5px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            margin-top: 6px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            font-weight: 600;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            font-weight: 700;
+        }
+
+        .day-heading-indicator {
+            font-size: 16px;
+            color: var(--text-color);
+            font-weight: 900;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            padding-bottom: 3px;
         }
 
         /* Routine Section */
         .routine-days {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             flex-wrap: nowrap;
         }
 
         .routine-btn {
-            background: rgba(0,0,0,0.6);
+            background: rgba(20,20,20,0.9);
             color: #888;
             border: 2px solid var(--glass-border);
-            padding: 15px 0;
-            border-radius: 12px;
+            padding: 20px 0;
+            border-radius: 15px;
             cursor: pointer;
             flex: 1;
             text-align: center;
-            font-weight: 800;
+            font-weight: 900;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
-            font-size: 15px;
+            gap: 10px;
+            font-size: 18px;
             transition: all 0.3s ease;
         }
 
@@ -272,59 +282,68 @@
             color: var(--text-color);
             border-color: var(--text-color);
             background: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 15px var(--white-glow);
+            box-shadow: 0 0 20px var(--white-glow);
         }
 
-        .routine-btn:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
-
         .routine-badge {
-            font-size: 13px;
+            font-size: 15px;
             background: var(--text-color);
             color: var(--bg-color);
-            border-radius: 12px;
-            padding: 3px 10px;
+            border-radius: 15px;
+            padding: 4px 12px;
             font-weight: 900;
-            box-shadow: 0 0 10px var(--white-glow);
+            box-shadow: 0 0 15px var(--white-glow);
         }
 
         /* UI Elements & Inputs */
         input[type="text"], select, input[type="date"] {
-            background: rgba(0,0,0,0.8);
+            background: rgba(20,20,20,0.9);
             color: var(--text-color);
             border: 2px solid var(--glass-border);
-            padding: 16px;
-            border-radius: 10px;
-            font-size: 16px; /* 16px prevents mobile auto-zoom */
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 18px;
             width: 100%;
             box-sizing: border-box;
             outline: none;
             transition: all 0.3s;
-            box-shadow: inset 0 0 10px rgba(0,0,0,1);
+            box-shadow: inset 0 0 15px rgba(0,0,0,1);
         }
 
         input[type="text"]:focus, select:focus, input[type="date"]:focus {
             border-color: var(--text-color);
-            box-shadow: 0 0 15px var(--white-glow), inset 0 0 10px rgba(0,0,0,1);
+            box-shadow: 0 0 20px var(--white-glow), inset 0 0 15px rgba(0,0,0,1);
         }
 
         .primary-btn {
             background: var(--text-color);
             color: var(--bg-color);
             border: none;
-            padding: 16px 25px;
-            border-radius: 10px;
+            padding: 20px 30px;
+            border-radius: 12px;
+            font-weight: 900;
+            font-size: 18px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 20px var(--white-glow);
+            width: 100%;
+        }
+
+        .primary-btn:active { transform: scale(0.98); }
+
+        .secondary-btn {
+            background: transparent;
+            color: var(--text-color);
+            border: 2px solid var(--text-color);
+            padding: 15px 20px;
+            border-radius: 12px;
             font-weight: 900;
             font-size: 16px;
             cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 0 15px var(--white-glow);
-        }
-
-        .primary-btn:hover {
-            box-shadow: 0 0 30px var(--white-glow);
-            transform: scale(1.02);
+            box-shadow: 0 0 10px rgba(255,255,255,0.2);
+            width: 100%;
+            margin-bottom: 10px;
         }
 
         .icon-btn {
@@ -332,21 +351,20 @@
             border: none;
             color: var(--danger);
             cursor: pointer;
-            font-size: 24px;
-            transition: transform 0.2s;
-            text-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+            font-size: 28px;
+            text-shadow: 0 0 15px rgba(255, 77, 77, 0.8);
+            padding: 5px 15px;
         }
-        .icon-btn:hover { transform: scale(1.3); }
 
         /* Color Pickers */
         .color-picker-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 15px 0;
+            padding: 20px 0;
             border-bottom: 1px solid var(--glass-border);
-            font-size: 18px;
-            font-weight: 600;
+            font-size: 20px;
+            font-weight: 800;
         }
 
         .color-picker-row:last-child { border-bottom: none; }
@@ -354,43 +372,54 @@
         input[type="color"] {
             -webkit-appearance: none;
             border: none;
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             cursor: pointer;
             padding: 0;
             background: transparent;
-            box-shadow: 0 0 15px var(--white-glow);
+            box-shadow: 0 0 20px var(--white-glow);
         }
         
         input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
         input[type="color"]::-webkit-color-swatch { border: 3px solid var(--text-color); border-radius: 50%; }
 
-        /* Term Rows */
+        /* Term Rows & Activities */
         .term-row {
             display: flex;
+            flex-direction: column;
             gap: 15px;
-            align-items: center;
-            margin-bottom: 15px;
-            background: rgba(0,0,0,0.5);
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
+            background: rgba(20,20,20,0.8);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid var(--glass-border);
+            margin-bottom: 20px;
         }
 
-        /* Activity List */
         .activity-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(0,0,0,0.6);
-            padding: 18px 20px;
-            border-radius: 10px;
-            margin-bottom: 12px;
-            border-left: 4px solid var(--text-color);
-            font-size: 18px;
-            font-weight: bold;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            background: rgba(30,30,30,0.8);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border-left: 5px solid var(--text-color);
+            font-size: 20px;
+            font-weight: 800;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+        }
+
+        .heading-item {
+            background: transparent !important;
+            border-left: none !important;
+            border-bottom: 2px solid var(--text-color);
+            padding: 10px 5px !important;
+            font-size: 22px !important;
+            color: var(--gold);
+            text-shadow: 0 0 10px rgba(255,215,0,0.5);
+            margin-top: 15px;
+            box-shadow: none !important;
         }
 
         /* Modals */
@@ -398,9 +427,9 @@
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             z-index: 1000;
         }
 
@@ -409,13 +438,15 @@
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             background: var(--bg-color);
-            border: 2px solid var(--text-color);
-            padding: 30px;
-            width: 90%;
+            border: 3px solid var(--text-color);
+            padding: 30px 20px;
+            width: 95%;
             max-width: 500px;
-            border-radius: 16px;
-            box-shadow: 0 0 50px rgba(255,255,255,0.2);
+            border-radius: 20px;
+            box-shadow: 0 0 60px rgba(255,255,255,0.3);
             z-index: 1001;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .modal-header {
@@ -430,9 +461,7 @@
         .event-list {
             list-style: none;
             padding: 0;
-            margin: 0 0 25px 0;
-            max-height: 400px;
-            overflow-y: auto;
+            margin: 0 0 30px 0;
         }
 
     </style>
@@ -456,28 +485,28 @@
         </div>
 
         <div class="calendar-grid">
-            <div class="day-header">Sun</div>
             <div class="day-header">Mon</div>
             <div class="day-header">Tue</div>
             <div class="day-header">Wed</div>
             <div class="day-header">Thu</div>
             <div class="day-header">Fri</div>
             <div class="day-header">Sat</div>
+            <div class="day-header">Sun</div>
         </div>
         <div class="calendar-grid" id="calendar-body">
             </div>
 
-        <div class="glass-card" style="margin-top: 40px;">
-            <h3 style="margin-top: 0;">Weekly Routines</h3>
-            <p style="text-align: center; color: #aaa; font-size: 15px; margin-bottom: 25px;">Automate activities for every day of the week.</p>
+        <div class="glass-card">
+            <h3>Weekly Routines</h3>
+            <p style="text-align: center; color: #bbb; font-size: 18px; margin-bottom: 30px;">Automate activities for every day of the week.</p>
             
-            <div style="margin-bottom: 30px;">
-                <h4 style="text-align: left; margin: 0 0 15px 0; font-size: 18px;">School Term</h4>
+            <div style="margin-bottom: 40px;">
+                <h4 style="text-align: left; font-size: 22px; margin-bottom: 20px;">School Term</h4>
                 <div class="routine-days" id="school-routine-days"></div>
             </div>
             
             <div>
-                <h4 style="text-align: left; margin: 0 0 15px 0; font-size: 18px;">Holiday Term</h4>
+                <h4 style="text-align: left; font-size: 22px; margin-bottom: 20px;">Holiday Term</h4>
                 <div class="routine-days" id="holiday-routine-days"></div>
             </div>
         </div>
@@ -486,44 +515,44 @@
     <div id="view-admin" class="view">
         
         <div class="glass-card">
-            <h3 style="margin-top:0;">Calendar Glow Colors</h3>
-            <p style="text-align: center; color: #aaa; font-size: 15px; margin-bottom: 25px;">Select bright neon colors for the best glowing outlines!</p>
+            <h3>Glow Colors</h3>
+            <p style="text-align: center; color: #bbb; font-size: 18px; margin-bottom: 30px;">Select bright neon colors to project glowing borders on the calendar.</p>
             
             <div class="color-picker-row">
-                <span>School Weekday Glow</span>
+                <span>School Weekday</span>
                 <input type="color" id="col-school-week" onchange="updateSetting('colSchoolWeek', this.value)">
             </div>
             <div class="color-picker-row">
-                <span>School Weekend Glow</span>
+                <span>School Weekend</span>
                 <input type="color" id="col-school-end" onchange="updateSetting('colSchoolEnd', this.value)">
             </div>
             <div class="color-picker-row">
-                <span>Holiday Weekday Glow</span>
+                <span>Holiday Weekday</span>
                 <input type="color" id="col-hol-week" onchange="updateSetting('colHolWeek', this.value)">
             </div>
             <div class="color-picker-row">
-                <span>Holiday Weekend Glow</span>
+                <span>Holiday Weekend</span>
                 <input type="color" id="col-hol-end" onchange="updateSetting('colHolEnd', this.value)">
             </div>
         </div>
 
         <div class="glass-card">
-            <h3 style="margin-top:0;">Terms & Periods</h3>
+            <h3>Terms & Periods</h3>
             
-            <h4 style="text-align: left; margin-bottom: 15px;">School Terms</h4>
+            <h4 style="text-align: left; font-size: 24px; margin-bottom: 20px;">School Terms</h4>
             <div id="school-periods-list"></div>
-            <button class="primary-btn" onclick="addPeriod('school')" style="width:100%; margin-bottom:30px;">+ Add School Term</button>
+            <button class="secondary-btn" onclick="addPeriod('school')" style="margin-bottom: 40px;">+ Add School Term</button>
 
-            <h4 style="text-align: left; margin-bottom: 15px;">Holiday Terms</h4>
+            <h4 style="text-align: left; font-size: 24px; margin-bottom: 20px;">Holiday Terms</h4>
             <div id="holiday-periods-list"></div>
-            <button class="primary-btn" onclick="addPeriod('holiday')" style="width:100%;">+ Add Holiday Term</button>
+            <button class="secondary-btn" onclick="addPeriod('holiday')">+ Add Holiday Term</button>
         </div>
 
         <div class="glass-card">
-            <h3 style="margin-top:0;">Available Activities</h3>
-            <div style="display: flex; gap: 15px; margin-bottom: 20px;">
-                <input type="text" id="new-activity" placeholder="e.g., Morning Run, Stretch...">
-                <button class="primary-btn" onclick="addActivityDef()">Add</button>
+            <h3>Available Activities</h3>
+            <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;">
+                <input type="text" id="new-activity" placeholder="e.g., 20 min Crosstrainer">
+                <button class="primary-btn" onclick="addActivityDef()">Add to Options</button>
             </div>
             <div id="activity-list"></div>
         </div>
@@ -532,13 +561,16 @@
     <div id="modal-overlay" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-header">
-                <h3 id="modal-date-title" style="margin: 0; font-size: 24px;">Date</h3>
-                <button class="icon-btn" onclick="closeModal('modal-overlay')" style="color:var(--text-color); text-shadow: 0 0 10px white;">✕</button>
+                <h3 id="modal-date-title" style="margin: 0; font-size: 28px;">Date</h3>
+                <button class="icon-btn" onclick="closeModal('modal-overlay')" style="color:white;">✕</button>
             </div>
             <ul id="modal-event-list" class="event-list"></ul>
+            
             <div style="display: flex; flex-direction: column; gap: 15px;">
+                <button class="secondary-btn" onclick="addHeadingToDate()">+ Add Sub-Heading (e.g. Morning:)</button>
+                <div style="height: 1px; background: var(--glass-border); margin: 10px 0;"></div>
                 <select id="modal-activity-select"></select>
-                <button class="primary-btn" onclick="addEventToDate()">Add to Date</button>
+                <button class="primary-btn" onclick="addEventToDate()">Add Activity</button>
             </div>
         </div>
     </div>
@@ -546,25 +578,28 @@
     <div id="routine-modal-overlay" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-header">
-                <h3 id="routine-modal-title" style="margin: 0; font-size: 24px;">Routine</h3>
-                <button class="icon-btn" onclick="closeModal('routine-modal-overlay')" style="color:var(--text-color); text-shadow: 0 0 10px white;">✕</button>
+                <h3 id="routine-modal-title" style="margin: 0; font-size: 28px;">Routine</h3>
+                <button class="icon-btn" onclick="closeModal('routine-modal-overlay')" style="color:white;">✕</button>
             </div>
             <ul id="routine-event-list" class="event-list"></ul>
+            
             <div style="display: flex; flex-direction: column; gap: 15px;">
+                <button class="secondary-btn" onclick="addHeadingToRoutine()">+ Add Sub-Heading (e.g. Morning:)</button>
+                <div style="height: 1px; background: var(--glass-border); margin: 10px 0;"></div>
                 <select id="routine-activity-select"></select>
-                <button class="primary-btn" onclick="addRoutineEvent()">Add to Routine</button>
+                <button class="primary-btn" onclick="addRoutineEvent()">Add Activity</button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- Data Setup & Migration ---
+        // --- Data Setup ---
         let currentDate = new Date();
         let selectedDateStr = "";
         let selectedRoutineType = ""; 
         let selectedRoutineDay = 0; 
+        const HEADING_PREFIX = ":::HEADING:::";
 
-        // Default vibrant neon colors for new users
         const defaultData = {
             events: {}, 
             activities: ["Morning Stretch", "Cardio", "Weight Lifting", "Homework", "Rest Day"],
@@ -581,23 +616,19 @@
 
         let appData = JSON.parse(localStorage.getItem("joeysCalendar")) || defaultData;
         
+        // Data Migration Safeguards
         if(!appData.events) appData.events = {};
         if(!appData.activities) appData.activities = defaultData.activities;
         if(!appData.settings) appData.settings = defaultData.settings;
         if(!appData.routines) appData.routines = defaultData.routines;
-        
-        if(appData.settings.schoolStart && appData.settings.schoolPeriods === undefined) {
-            appData.settings.schoolPeriods = [{start: appData.settings.schoolStart, end: appData.settings.schoolEnd}];
-            appData.settings.holidayPeriods = [{start: appData.settings.holidayStart, end: appData.settings.holidayEnd}];
-        }
         if(!appData.settings.schoolPeriods) appData.settings.schoolPeriods = [];
         if(!appData.settings.holidayPeriods) appData.settings.holidayPeriods = [];
 
         const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        // Internal JS logic uses 0=Sun, 1=Mon. 
         const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const dayNamesShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-        // --- Init ---
         window.onload = () => {
             loadAdminUI();
             renderCalendar();
@@ -605,9 +636,7 @@
             renderAdminActivities();
         };
 
-        function saveData() {
-            localStorage.setItem("joeysCalendar", JSON.stringify(appData));
-        }
+        function saveData() { localStorage.setItem("joeysCalendar", JSON.stringify(appData)); }
 
         function switchTab(tab) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -617,11 +646,9 @@
             if (tab === 'calendar') renderCalendar(); 
         }
 
-        // --- Core Logic ---
         function isDateInPeriods(dateObj, periods) {
             if (!periods || periods.length === 0) return false;
             let target = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate()).getTime();
-            
             return periods.some(p => {
                 if(!p.start || !p.end) return false;
                 let s = p.start.split('-');
@@ -635,16 +662,15 @@
         function getDayColor(dateObj) {
             let dayOfWeek = dateObj.getDay();
             let isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
-            
             if (isDateInPeriods(dateObj, appData.settings.holidayPeriods)) {
                 return isWeekend ? appData.settings.colHolEnd : appData.settings.colHolWeek;
             } else if (isDateInPeriods(dateObj, appData.settings.schoolPeriods)) {
                 return isWeekend ? appData.settings.colSchoolEnd : appData.settings.colSchoolWeek;
             }
-            return "#333333"; // Default subtle border for days with no terms
+            return "#333333"; 
         }
 
-        // --- Calendar Rendering ---
+        // --- Calendar Rendering (Mon - Sun) ---
         function changeMonth(dir) {
             currentDate.setMonth(currentDate.getMonth() + dir);
             renderCalendar();
@@ -667,14 +693,19 @@
             document.getElementById("month-year-display").innerText = `${months[month]} ${year}`;
             document.getElementById("month-picker").value = `${year}-${String(month + 1).padStart(2, '0')}`;
 
-            const firstDay = new Date(year, month, 1).getDay();
+            // JS getDay(): 0 is Sunday, 1 is Monday.
+            // We want calendar to start on Monday.
+            let firstDayIndex = new Date(year, month, 1).getDay();
+            let emptyDays = (firstDayIndex === 0) ? 6 : firstDayIndex - 1; 
+
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const today = new Date();
 
             const body = document.getElementById("calendar-body");
             body.innerHTML = "";
 
-            for (let i = 0; i < firstDay; i++) {
+            // Empty slots
+            for (let i = 0; i < emptyDays; i++) {
                 body.appendChild(document.createElement("div"));
             }
 
@@ -683,12 +714,11 @@
                 dayDiv.className = "calendar-day";
                 
                 let currentDayObj = new Date(year, month, i);
-                
-                // Admin Glow Logic
                 let glowColor = getDayColor(currentDayObj);
+                
                 if(glowColor !== "#333333") {
                     dayDiv.style.borderColor = glowColor;
-                    dayDiv.style.boxShadow = `0 0 15px ${glowColor}, inset 0 0 10px ${glowColor}`;
+                    dayDiv.style.boxShadow = `0 0 25px ${glowColor}, inset 0 0 15px ${glowColor}`;
                 }
 
                 if (year === today.getFullYear() && month === today.getMonth() && i === today.getDate()) {
@@ -711,8 +741,13 @@
 
                 allEvents.forEach(evt => {
                     let eDiv = document.createElement("div");
-                    eDiv.className = "day-event-indicator";
-                    eDiv.innerText = evt;
+                    if (evt.startsWith(HEADING_PREFIX)) {
+                        eDiv.className = "day-heading-indicator";
+                        eDiv.innerText = evt.replace(HEADING_PREFIX, "");
+                    } else {
+                        eDiv.className = "day-event-indicator";
+                        eDiv.innerText = evt;
+                    }
                     dayDiv.appendChild(eDiv);
                 });
 
@@ -721,7 +756,7 @@
             }
         }
 
-        // --- Weekly Routines UI ---
+        // --- Weekly Routines UI (Mon - Sun) ---
         function renderRoutines() {
             const dayOrder = [1, 2, 3, 4, 5, 6, 0]; // Mon-Sun
             ["school", "holiday"].forEach(type => {
@@ -730,12 +765,14 @@
                 dayOrder.forEach(i => {
                     let btn = document.createElement("button");
                     btn.className = "routine-btn";
-                    let count = appData.routines[type][i].length;
                     
-                    if(count > 0) btn.classList.add("active-routine");
+                    // Count only actual activities, not headings
+                    let trueCount = appData.routines[type][i].filter(e => !e.startsWith(HEADING_PREFIX)).length;
+                    
+                    if(trueCount > 0) btn.classList.add("active-routine");
                     
                     btn.innerHTML = `<span>${dayNamesShort[i]}</span>`;
-                    if(count > 0) btn.innerHTML += `<span class="routine-badge">${count}</span>`;
+                    if(trueCount > 0) btn.innerHTML += `<span class="routine-badge">${trueCount}</span>`;
                     
                     btn.onclick = () => openRoutineModal(type, i);
                     container.appendChild(btn);
@@ -759,12 +796,17 @@
             let list = document.getElementById("routine-event-list");
             list.innerHTML = "";
             let routines = appData.routines[selectedRoutineType][selectedRoutineDay];
-            if (routines.length === 0) return list.innerHTML = "<li style='color:#aaa;'>No routines set.</li>";
+            if (routines.length === 0) return list.innerHTML = "<li style='color:#888; font-size:20px;'>No routines set.</li>";
             
             routines.forEach((evt, i) => {
                 let li = document.createElement("li");
-                li.className = "activity-item";
-                li.innerHTML = `<span>↻ ${evt}</span> <button class="icon-btn" onclick="removeRoutineEvent(${i})">✕</button>`;
+                if (evt.startsWith(HEADING_PREFIX)) {
+                    li.className = "activity-item heading-item";
+                    li.innerHTML = `<span>${evt.replace(HEADING_PREFIX, "")}</span> <button class="icon-btn" onclick="removeRoutineEvent(${i})">✕</button>`;
+                } else {
+                    li.className = "activity-item";
+                    li.innerHTML = `<span>${evt}</span> <button class="icon-btn" onclick="removeRoutineEvent(${i})">✕</button>`;
+                }
                 list.appendChild(li);
             });
         }
@@ -788,31 +830,62 @@
             
             let sEvts = appData.events[selectedDateStr] || [];
             
-            if (rEvts.length===0 && sEvts.length===0) return list.innerHTML = "<li style='color:#aaa; font-size:18px;'>Free day! No activities.</li>";
+            if (rEvts.length===0 && sEvts.length===0) return list.innerHTML = "<li style='color:#888; font-size:22px;'>Free day! No activities.</li>";
 
             rEvts.forEach(evt => {
                 let li = document.createElement("li");
-                li.className = "activity-item";
-                li.style.borderLeftColor = "#888";
-                li.innerHTML = `<span style="color:#aaa;">↻ ${evt}</span>`;
+                if (evt.startsWith(HEADING_PREFIX)) {
+                    li.className = "activity-item heading-item";
+                    li.innerHTML = `<span>${evt.replace(HEADING_PREFIX, "")}</span>`;
+                } else {
+                    li.className = "activity-item";
+                    li.style.borderLeftColor = "#888";
+                    li.innerHTML = `<span style="color:#aaa;">↻ ${evt}</span>`;
+                }
                 list.appendChild(li);
             });
 
             sEvts.forEach((evt, i) => {
                 let li = document.createElement("li");
-                li.className = "activity-item";
-                li.innerHTML = `<span>${evt}</span> <button class="icon-btn" onclick="removeEvent(${i})">✕</button>`;
+                if (evt.startsWith(HEADING_PREFIX)) {
+                    li.className = "activity-item heading-item";
+                    li.innerHTML = `<span>${evt.replace(HEADING_PREFIX, "")}</span> <button class="icon-btn" onclick="removeEvent(${i})">✕</button>`;
+                } else {
+                    li.className = "activity-item";
+                    li.innerHTML = `<span>${evt}</span> <button class="icon-btn" onclick="removeEvent(${i})">✕</button>`;
+                }
                 list.appendChild(li);
             });
         }
 
-        // --- Data Mutations (Auto-save) ---
+        // --- Data Mutations ---
         function populateSelect(id) {
             let sel = document.getElementById(id);
             sel.innerHTML = "";
             appData.activities.forEach(a => sel.add(new Option(a, a)));
         }
 
+        // Headings
+        function addHeadingToRoutine() {
+            let val = prompt("Enter sub-heading (e.g., Morning, Evening):");
+            if(val && val.trim() !== "") {
+                appData.routines[selectedRoutineType][selectedRoutineDay].push(HEADING_PREFIX + val.trim());
+                saveData(); renderRoutineEventsList(); renderRoutines(); renderCalendar();
+            }
+        }
+
+        function addHeadingToDate() {
+            let val = prompt("Enter sub-heading (e.g., Morning, Evening):");
+            if(val && val.trim() !== "") {
+                if(!appData.events[selectedDateStr]) appData.events[selectedDateStr] = [];
+                appData.events[selectedDateStr].push(HEADING_PREFIX + val.trim());
+                saveData(); 
+                let p = selectedDateStr.split('-');
+                renderModalEvents(new Date(p[0], p[1]-1, p[2])); renderCalendar();
+            }
+        }
+
+        // Activities
         function addRoutineEvent() {
             let v = document.getElementById("routine-activity-select").value;
             if(v) { appData.routines[selectedRoutineType][selectedRoutineDay].push(v); saveData(); renderRoutineEventsList(); renderRoutines(); renderCalendar(); }
@@ -861,10 +934,13 @@
                 let row = document.createElement("div");
                 row.className = "term-row";
                 row.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:20px; font-weight:800;">Term ${i+1}</span>
+                        <button class="icon-btn" onclick="removePeriod('${type}', ${i})">✕</button>
+                    </div>
                     <input type="date" value="${p.start}" onchange="updatePeriod('${type}', ${i}, 'start', this.value)">
-                    <span style="color:#aaa; font-weight:bold;">TO</span>
+                    <div style="text-align:center; font-weight:900; color:#aaa;">TO</div>
                     <input type="date" value="${p.end}" onchange="updatePeriod('${type}', ${i}, 'end', this.value)">
-                    <button class="icon-btn" onclick="removePeriod('${type}', ${i})">✕</button>
                 `;
                 list.appendChild(row);
             });
