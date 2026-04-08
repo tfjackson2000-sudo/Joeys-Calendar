@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -173,7 +174,7 @@
 
         .calendar-day {
             min-height: 160px;
-            background-color: var(--bg-color); /* Always black inside */
+            background-color: var(--bg-color); 
             border: 2px solid #333;
             padding: 12px;
             cursor: pointer;
@@ -336,16 +337,17 @@
 
         .secondary-btn {
             background: transparent;
-            color: var(--text-color);
-            border: 2px solid var(--text-color);
+            color: var(--gold);
+            border: 2px solid var(--gold);
             padding: 15px 20px;
             border-radius: 12px;
             font-weight: 900;
             font-size: 16px;
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(255,255,255,0.2);
+            box-shadow: 0 0 10px rgba(255,215,0,0.2);
             width: 100%;
             margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255,215,0,0.5);
         }
 
         .icon-btn {
@@ -453,7 +455,6 @@
             transform: translate(-50%, -50%);
         }
 
-        /* Strikethrough style for completed items */
         .activity-item.done {
             opacity: 0.6;
             border-left-color: #555;
@@ -468,7 +469,7 @@
             background: transparent !important;
             border-left: none !important;
             border-bottom: 2px solid var(--text-color);
-            padding: 10px 5px !important;
+            padding: 15px 5px 5px 5px !important;
             font-size: 22px !important;
             color: var(--gold);
             text-shadow: 0 0 10px rgba(255,215,0,0.5);
@@ -518,6 +519,17 @@
             padding: 0;
             margin: 0 0 30px 0;
         }
+
+        /* Group Creator List */
+        .group-creation-label {
+            display: flex;
+            align-items: center;
+            padding: 15px 10px;
+            border-bottom: 1px solid var(--glass-border);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .group-creation-label:hover { background: rgba(255,255,255,0.05); }
 
     </style>
 </head>
@@ -596,11 +608,11 @@
             
             <h4 style="text-align: left; font-size: 24px; margin-bottom: 20px;">School Terms</h4>
             <div id="school-periods-list"></div>
-            <button class="secondary-btn" onclick="addPeriod('school')" style="margin-bottom: 40px;">+ Add School Term</button>
+            <button class="secondary-btn" onclick="addPeriod('school')" style="margin-bottom: 40px; color:var(--text-color); border-color:var(--text-color); text-shadow:none;">+ Add School Term</button>
 
             <h4 style="text-align: left; font-size: 24px; margin-bottom: 20px;">Holiday Terms</h4>
             <div id="holiday-periods-list"></div>
-            <button class="secondary-btn" onclick="addPeriod('holiday')">+ Add Holiday Term</button>
+            <button class="secondary-btn" onclick="addPeriod('holiday')" style="color:var(--text-color); border-color:var(--text-color); text-shadow:none;">+ Add Holiday Term</button>
         </div>
 
         <div class="glass-card">
@@ -613,7 +625,7 @@
         </div>
     </div>
 
-    <!-- Modals -->
+    <!-- MAIN MODALS -->
     <div id="modal-overlay" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-header">
@@ -624,10 +636,10 @@
             <ul id="modal-event-list" class="event-list"></ul>
             
             <div style="display: flex; flex-direction: column; gap: 15px;">
-                <button class="secondary-btn" onclick="addHeadingToDate()">+ Add Sub-Heading (e.g. Morning:)</button>
+                <button class="secondary-btn" onclick="openGroupModal('date')">+ Add Sub-Heading & Activities</button>
                 <div style="height: 1px; background: var(--glass-border); margin: 10px 0;"></div>
                 <select id="modal-activity-select"></select>
-                <button class="primary-btn" onclick="addEventToDate()">Add Activity</button>
+                <button class="primary-btn" onclick="addEventToDate()">Add Single Activity</button>
             </div>
         </div>
     </div>
@@ -644,10 +656,32 @@
             <ul id="routine-event-list" class="event-list"></ul>
             
             <div style="display: flex; flex-direction: column; gap: 15px;">
-                <button class="secondary-btn" onclick="addHeadingToRoutine()">+ Add Sub-Heading (e.g. Morning:)</button>
+                <button class="secondary-btn" onclick="openGroupModal('routine')">+ Add Sub-Heading & Activities</button>
                 <div style="height: 1px; background: var(--glass-border); margin: 10px 0;"></div>
                 <select id="routine-activity-select"></select>
-                <button class="primary-btn" onclick="addRoutineEvent()">Add Activity</button>
+                <button class="primary-btn" onclick="addRoutineEvent()">Add Single Activity</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: GROUP CREATOR MODAL -->
+    <div id="group-modal-overlay" class="modal-overlay" style="z-index: 1010;">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 style="margin: 0; font-size: 26px; color:var(--gold);">Create Group</h3>
+                <button class="icon-btn" onclick="closeModal('group-modal-overlay')" style="color:white;">✕</button>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <input type="text" id="group-heading-input" placeholder="Heading (e.g. Morning:)">
+                
+                <div style="max-height: 35vh; overflow-y: auto; background: rgba(0,0,0,0.5); border-radius: 12px; border: 1px solid var(--glass-border); margin: 10px 0;">
+                    <div id="group-activities-list">
+                        <!-- Checkboxes injected here -->
+                    </div>
+                </div>
+
+                <button class="primary-btn" onclick="saveGroup()" style="background:var(--gold); color:black;">Save Group</button>
             </div>
         </div>
     </div>
@@ -659,12 +693,14 @@
         let selectedRoutineType = ""; 
         let selectedRoutineDay = 0; 
         
+        let groupTargetType = ""; // 'date' or 'routine'
+
         const HEADING_PREFIX = ":::HEADING:::";
         const DONE_PREFIX = ":::DONE:::";
 
         const defaultData = {
             events: {}, 
-            completedRoutines: {}, // Tracks which routine indices are checked off for a specific date
+            completedRoutines: {}, 
             activities: ["Morning Stretch", "Cardio", "Weight Lifting", "Homework", "Rest Day"],
             settings: {
                 colSchoolWeek: "#00f3ff", colSchoolEnd: "#00ff66",
@@ -757,8 +793,6 @@
             document.getElementById("month-year-display").innerText = `${months[month]} ${year}`;
             document.getElementById("month-picker").value = `${year}-${String(month + 1).padStart(2, '0')}`;
 
-            // JS getDay(): 0 is Sunday, 1 is Monday.
-            // We want calendar to start on Monday.
             let firstDayIndex = new Date(year, month, 1).getDay();
             let emptyDays = (firstDayIndex === 0) ? 6 : firstDayIndex - 1; 
 
@@ -804,13 +838,11 @@
                 
                 let completedRoutineIndices = appData.completedRoutines[dateStr] || [];
 
-                // Format Routine Objects
                 let dayRoutinesObj = dayRoutines.map((e, index) => ({
                     text: e,
                     done: completedRoutineIndices.includes(index)
                 }));
 
-                // Format Specific Event Objects
                 let specificEventsObj = (appData.events[dateStr] || []).map(e => ({
                     text: e.startsWith(DONE_PREFIX) ? e.replace(DONE_PREFIX, "") : e,
                     done: e.startsWith(DONE_PREFIX)
@@ -851,7 +883,6 @@
                     let btn = document.createElement("button");
                     btn.className = "routine-btn";
                     
-                    // Count only actual activities, not headings
                     let trueCount = appData.routines[type][i].filter(e => !e.startsWith(HEADING_PREFIX)).length;
                     
                     if(trueCount > 0) btn.classList.add("active-routine");
@@ -882,7 +913,7 @@
             let list = document.getElementById("routine-event-list");
             list.innerHTML = "";
             let routines = appData.routines[selectedRoutineType][selectedRoutineDay];
-            if (routines.length === 0) return list.innerHTML = "<li style='color:#888; font-size:20px;'>No routine items set.</li>";
+            if (routines.length === 0) return list.innerHTML = "<li style='color:#888; font-size:20px; text-align:center;'>No routine items set.</li>";
             
             routines.forEach((evt, i) => {
                 let li = document.createElement("li");
@@ -917,7 +948,7 @@
             
             let sEvts = appData.events[selectedDateStr] || [];
             
-            if (rEvts.length===0 && sEvts.length===0) return list.innerHTML = "<li style='color:#888; font-size:22px;'>Free day! No activities.</li>";
+            if (rEvts.length===0 && sEvts.length===0) return list.innerHTML = "<li style='color:#888; font-size:22px; text-align:center;'>Free day! No activities.</li>";
 
             let completedRoutineIndices = appData.completedRoutines[selectedDateStr] || [];
 
@@ -967,15 +998,67 @@
             });
         }
 
+        // --- NEW: Group Creator Logic ---
+        function openGroupModal(type) {
+            groupTargetType = type;
+            document.getElementById("group-heading-input").value = "";
+            
+            let list = document.getElementById("group-activities-list");
+            list.innerHTML = "";
+            
+            appData.activities.forEach((act, i) => {
+                let label = document.createElement("label");
+                label.className = "group-creation-label";
+                label.innerHTML = `
+                    <input type="checkbox" class="neon-checkbox" id="group-act-${i}" value="${act}" style="width: 28px; height: 28px; margin-right: 15px;">
+                    <span style="font-size: 20px; font-weight: bold; flex-grow: 1;">${act}</span>
+                `;
+                list.appendChild(label);
+            });
+            
+            document.getElementById("group-modal-overlay").style.display = "block";
+        }
+
+        function saveGroup() {
+            let headingText = document.getElementById("group-heading-input").value.trim();
+            if(!headingText) headingText = "Group";
+            
+            let selectedActs = [];
+            let checkboxes = document.querySelectorAll("#group-activities-list input[type='checkbox']:checked");
+            checkboxes.forEach(cb => selectedActs.push(cb.value));
+            
+            if(groupTargetType === 'date') {
+                if(!appData.events[selectedDateStr]) appData.events[selectedDateStr] = [];
+                appData.events[selectedDateStr].push(HEADING_PREFIX + headingText);
+                selectedActs.forEach(act => appData.events[selectedDateStr].push(act));
+                
+                let p = selectedDateStr.split('-');
+                renderModalEvents(new Date(p[0], p[1]-1, p[2]));
+                renderCalendar();
+                
+            } else if (groupTargetType === 'routine') {
+                appData.routines[selectedRoutineType][selectedRoutineDay].push(HEADING_PREFIX + headingText);
+                selectedActs.forEach(act => appData.routines[selectedRoutineType][selectedRoutineDay].push(act));
+                
+                renderRoutineEventsList(); 
+                renderRoutines(); 
+                renderCalendar();
+            }
+            
+            saveData();
+            closeModal("group-modal-overlay");
+        }
+
+
         // --- Checkbox Toggling ---
         function toggleRoutineEvent(index) {
             if(!appData.completedRoutines[selectedDateStr]) appData.completedRoutines[selectedDateStr] = [];
             let cr = appData.completedRoutines[selectedDateStr];
             let pos = cr.indexOf(index);
             if(pos > -1) {
-                cr.splice(pos, 1); // Uncheck
+                cr.splice(pos, 1); 
             } else {
-                cr.push(index);   // Check
+                cr.push(index);   
             }
             saveData();
             
@@ -987,9 +1070,9 @@
         function toggleSpecificEvent(index) {
             let evt = appData.events[selectedDateStr][index];
             if (evt.startsWith(DONE_PREFIX)) {
-                appData.events[selectedDateStr][index] = evt.replace(DONE_PREFIX, ""); // Uncheck
+                appData.events[selectedDateStr][index] = evt.replace(DONE_PREFIX, ""); 
             } else {
-                appData.events[selectedDateStr][index] = DONE_PREFIX + evt; // Check
+                appData.events[selectedDateStr][index] = DONE_PREFIX + evt; 
             }
             saveData();
             
@@ -1003,26 +1086,6 @@
             let sel = document.getElementById(id);
             sel.innerHTML = "";
             appData.activities.forEach(a => sel.add(new Option(a, a)));
-        }
-
-        // Headings
-        function addHeadingToRoutine() {
-            let val = prompt("Enter sub-heading (e.g., Morning, Evening):");
-            if(val && val.trim() !== "") {
-                appData.routines[selectedRoutineType][selectedRoutineDay].push(HEADING_PREFIX + val.trim());
-                saveData(); renderRoutineEventsList(); renderRoutines(); renderCalendar();
-            }
-        }
-
-        function addHeadingToDate() {
-            let val = prompt("Enter sub-heading (e.g., Morning, Evening):");
-            if(val && val.trim() !== "") {
-                if(!appData.events[selectedDateStr]) appData.events[selectedDateStr] = [];
-                appData.events[selectedDateStr].push(HEADING_PREFIX + val.trim());
-                saveData(); 
-                let p = selectedDateStr.split('-');
-                renderModalEvents(new Date(p[0], p[1]-1, p[2])); renderCalendar();
-            }
         }
 
         // Activities
