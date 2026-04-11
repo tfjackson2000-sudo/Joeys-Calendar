@@ -28,12 +28,14 @@
             color: var(--text-color);
             text-align: center;
             font-weight: 900;
-            letter-spacing: 2px;
-            text-shadow: 0 0 20px var(--white-glow);
+            letter-spacing: 1px;
+            text-shadow: 0 0 15px var(--white-glow);
             margin-top: 0;
         }
 
-        h1 { font-size: 36px; padding-top: 30px; }
+        h1 { font-size: 28px; padding-top: 20px; }
+        h3 { font-size: 20px; }
+        h4 { font-size: 18px; }
 
         /* Tabs Navigation */
         .tabs {
@@ -41,60 +43,58 @@
             justify-content: center;
             background: rgba(0,0,0,0.95);
             backdrop-filter: blur(20px);
-            padding: 25px 0;
+            padding: 15px 0;
             position: sticky;
             top: 0;
             z-index: 100;
-            border-bottom: 2px solid var(--glass-border);
-            box-shadow: 0 10px 30px rgba(0,0,0,1);
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: 0 5px 15px rgba(0,0,0,1);
         }
 
         .tab-btn {
             background: transparent;
             color: var(--text-color);
-            border: 2px solid var(--glass-border);
-            padding: 15px 35px;
-            margin: 0 10px;
+            border: 1px solid var(--glass-border);
+            padding: 10px 18px;
+            margin: 0 5px;
             cursor: pointer;
-            font-size: 20px;
+            font-size: 14px;
             font-weight: 800;
-            border-radius: 50px;
+            border-radius: 30px;
             transition: all 0.3s ease;
-            box-shadow: 0 0 15px rgba(255,255,255,0.1);
         }
 
         .tab-btn.active {
             color: var(--bg-color);
             background: var(--text-color);
             border-color: var(--text-color);
-            box-shadow: 0 0 30px var(--white-glow);
-            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--white-glow);
         }
 
         /* Views */
         .view {
             display: none;
-            padding: 25px 15px;
-            max-width: 1000px;
+            padding: 15px 10px;
+            max-width: 800px;
             margin: 0 auto;
-            animation: fadeIn 0.4s ease;
+            animation: fadeIn 0.3s ease;
         }
 
         .view.active { display: block; }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         /* Glassmorphism Cards */
         .glass-card {
-            background: rgba(10, 10, 10, 0.9);
+            background: rgba(15, 15, 15, 0.9);
             border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 30px 20px;
-            margin-bottom: 35px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9), inset 0 0 25px rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.9);
         }
 
         /* Calendar Controls */
@@ -102,26 +102,22 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 35px;
-            background: rgba(15,15,15,0.9);
-            border: 2px solid var(--glass-border);
-            border-radius: 50px;
-            padding: 10px 25px;
-            box-shadow: 0 0 25px rgba(255,255,255,0.05);
+            margin-bottom: 20px;
+            background: rgba(20,20,20,0.9);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 5px 15px;
         }
 
         .nav-btn {
             background: transparent;
             color: var(--text-color);
             border: none;
-            font-size: 36px;
+            font-size: 24px;
             cursor: pointer;
-            padding: 10px 20px;
-            transition: all 0.2s;
-            text-shadow: 0 0 15px var(--white-glow);
+            padding: 5px 15px;
+            text-shadow: 0 0 10px var(--white-glow);
         }
-
-        .nav-btn:hover { transform: scale(1.2); }
 
         .date-picker-container {
             position: relative;
@@ -133,17 +129,11 @@
 
         #month-year-display {
             margin: 0;
-            font-size: 28px;
+            font-size: 18px;
             cursor: pointer;
-            padding: 15px 30px;
-            border-radius: 15px;
-            transition: all 0.3s;
+            padding: 10px 20px;
+            border-radius: 10px;
             background: rgba(255,255,255,0.05);
-        }
-
-        #month-year-display:hover { 
-            box-shadow: 0 0 20px var(--white-glow);
-            background: rgba(255,255,255,0.15);
         }
 
         #month-picker {
@@ -157,56 +147,47 @@
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 12px;
+            gap: 6px;
         }
 
         .day-header {
             text-align: center;
             color: var(--text-color);
-            font-size: 18px;
+            font-size: 12px;
             font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            padding: 15px 0;
-            text-shadow: 0 0 15px rgba(255,255,255,0.6);
+            padding: 10px 0;
         }
 
         .calendar-day {
-            min-height: 160px;
+            min-height: 90px;
             background-color: var(--bg-color); 
-            border: 2px solid #333;
-            padding: 12px;
+            border: 1px solid #333;
+            padding: 6px;
             cursor: pointer;
-            border-radius: 15px;
-            position: relative;
+            border-radius: 10px;
             display: flex;
             flex-direction: column;
-            transition: transform 0.2s;
+            overflow: hidden;
         }
 
-        .calendar-day:active { transform: scale(0.95); }
-
-        /* Today Override - Solid Gold */
+        /* Today Override */
         .calendar-day.today {
             background: var(--gold) !important;
-            border: 2px solid #FFF !important;
-            box-shadow: 0 0 50px var(--gold), inset 0 0 30px rgba(255,255,255,0.8) !important;
-            z-index: 2;
+            border: 1px solid #FFF !important;
+            box-shadow: 0 0 20px var(--gold), inset 0 0 15px rgba(255,255,255,0.5) !important;
         }
 
         .calendar-day.today .day-number {
             color: var(--bg-color) !important;
             background: transparent !important;
             text-shadow: none !important;
-            font-weight: 900;
-            font-size: 28px;
         }
 
         .calendar-day.today .day-event-indicator {
             background: var(--bg-color) !important;
             color: var(--text-color) !important;
             border: none;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.8);
         }
 
         .calendar-day.today .day-heading-indicator {
@@ -217,57 +198,53 @@
 
         .day-number {
             font-weight: 900;
-            font-size: 22px;
-            margin-bottom: 12px;
+            font-size: 14px;
+            margin-bottom: 6px;
             display: inline-block;
             color: var(--text-color);
-            text-shadow: 0 0 10px rgba(255,255,255,0.8);
             background: rgba(30,30,30,0.8);
-            padding: 5px 12px;
-            border-radius: 8px;
+            padding: 3px 8px;
+            border-radius: 6px;
             align-self: flex-start;
         }
 
         .day-event-indicator {
-            font-size: 15px;
+            font-size: 10px;
             background: rgba(255, 255, 255, 0.15);
             color: var(--text-color);
             border: 1px solid var(--glass-border);
-            padding: 8px 10px;
-            border-radius: 8px;
-            margin-top: 6px;
+            padding: 4px 6px;
+            border-radius: 4px;
+            margin-top: 4px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             font-weight: 700;
-            transition: all 0.3s;
         }
 
         .day-heading-indicator {
-            font-size: 16px;
+            font-size: 11px;
             color: var(--text-color);
             font-weight: 900;
-            margin-top: 10px;
+            margin-top: 6px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            text-shadow: 0 0 10px rgba(255,255,255,0.5);
             border-bottom: 1px solid rgba(255,255,255,0.3);
-            padding-bottom: 3px;
+            padding-bottom: 2px;
         }
 
         /* Routine Section */
         .routine-days {
             display: flex;
-            gap: 12px;
+            gap: 6px;
             flex-wrap: nowrap;
         }
 
         .routine-btn {
-            background: rgba(15,15,15,0.9);
+            background: rgba(20,20,20,0.9);
             color: #888;
-            border: 2px solid var(--glass-border);
-            padding: 20px 0;
-            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+            padding: 12px 0;
+            border-radius: 10px;
             cursor: pointer;
             flex: 1;
             text-align: center;
@@ -275,78 +252,64 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
-            font-size: 18px;
-            transition: all 0.3s ease;
+            gap: 6px;
+            font-size: 12px;
         }
 
         .routine-btn.active-routine {
             color: var(--text-color);
             border-color: var(--text-color);
             background: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 20px var(--white-glow);
+            box-shadow: 0 0 10px var(--white-glow);
         }
 
         .routine-badge {
-            font-size: 15px;
+            font-size: 11px;
             background: var(--text-color);
             color: var(--bg-color);
-            border-radius: 15px;
-            padding: 4px 12px;
+            border-radius: 10px;
+            padding: 2px 8px;
             font-weight: 900;
-            box-shadow: 0 0 15px var(--white-glow);
         }
 
-        /* UI Elements & Inputs */
+        /* UI Elements */
         input[type="text"], select, input[type="date"] {
-            background: rgba(15,15,15,0.9);
+            background: rgba(20,20,20,0.9);
             color: var(--text-color);
-            border: 2px solid var(--glass-border);
-            padding: 20px;
-            border-radius: 12px;
-            font-size: 18px;
+            border: 1px solid var(--glass-border);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px; 
             width: 100%;
             box-sizing: border-box;
             outline: none;
-            transition: all 0.3s;
-            box-shadow: inset 0 0 15px rgba(0,0,0,1);
-        }
-
-        input[type="text"]:focus, select:focus, input[type="date"]:focus {
-            border-color: var(--text-color);
-            box-shadow: 0 0 20px var(--white-glow), inset 0 0 15px rgba(0,0,0,1);
         }
 
         .primary-btn {
             background: var(--text-color);
             color: var(--bg-color);
             border: none;
-            padding: 20px 30px;
-            border-radius: 12px;
+            padding: 12px 20px;
+            border-radius: 8px;
             font-weight: 900;
-            font-size: 18px;
+            font-size: 14px;
             cursor: pointer;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 0 20px var(--white-glow);
+            box-shadow: 0 0 15px var(--white-glow);
             width: 100%;
         }
-
-        .primary-btn:active { transform: scale(0.98); }
 
         .secondary-btn {
             background: transparent;
             color: var(--gold);
-            border: 2px solid var(--gold);
-            padding: 15px 20px;
-            border-radius: 12px;
+            border: 1px solid var(--gold);
+            padding: 10px 15px;
+            border-radius: 8px;
             font-weight: 900;
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(255,215,0,0.2);
             width: 100%;
             margin-bottom: 10px;
-            text-shadow: 0 0 10px rgba(255,215,0,0.5);
         }
 
         .icon-btn {
@@ -354,9 +317,8 @@
             border: none;
             color: var(--danger);
             cursor: pointer;
-            font-size: 28px;
-            text-shadow: 0 0 15px rgba(255, 77, 77, 0.8);
-            padding: 5px 15px;
+            font-size: 20px;
+            padding: 5px 10px;
         }
 
         /* Color Pickers */
@@ -364,55 +326,50 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 20px 0;
+            padding: 12px 0;
             border-bottom: 1px solid var(--glass-border);
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 800;
         }
-
-        .color-picker-row:last-child { border-bottom: none; }
 
         input[type="color"] {
             -webkit-appearance: none;
             border: none;
-            width: 60px;
-            height: 60px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             cursor: pointer;
             padding: 0;
             background: transparent;
-            box-shadow: 0 0 20px var(--white-glow);
         }
         
         input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-        input[type="color"]::-webkit-color-swatch { border: 3px solid var(--text-color); border-radius: 50%; }
+        input[type="color"]::-webkit-color-swatch { border: 2px solid var(--text-color); border-radius: 50%; }
 
-        /* Term Rows & Activities */
+        /* Term Rows */
         .term-row {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            background: rgba(15,15,15,0.8);
-            padding: 20px;
-            border-radius: 15px;
-            border: 2px solid var(--glass-border);
-            margin-bottom: 20px;
+            gap: 10px;
+            background: rgba(20,20,20,0.8);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            margin-bottom: 15px;
         }
 
-        /* Lists & Ticking System */
+        /* Lists */
         .activity-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(25,25,25,0.9);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            border-left: 5px solid var(--text-color);
-            font-size: 20px;
+            background: rgba(30,30,30,0.9);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--text-color);
+            font-size: 16px;
             font-weight: 800;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.8);
-            transition: all 0.3s;
         }
 
         .activity-content {
@@ -421,59 +378,45 @@
             flex-grow: 1;
         }
 
-        /* Neon Checkbox */
         .neon-checkbox {
             appearance: none;
-            width: 32px;
-            height: 32px;
-            border: 3px solid var(--text-color);
-            border-radius: 8px;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--text-color);
+            border-radius: 6px;
             outline: none;
             cursor: pointer;
             position: relative;
-            box-shadow: 0 0 10px rgba(255,255,255,0.3);
-            transition: all 0.3s;
-            flex-shrink: 0;
-            margin-right: 18px;
+            margin-right: 12px;
             background: transparent;
         }
 
         .neon-checkbox:checked {
             background: var(--gold);
             border-color: var(--gold);
-            box-shadow: 0 0 20px var(--gold);
         }
 
         .neon-checkbox:checked::after {
             content: '✔';
             position: absolute;
             color: var(--bg-color);
-            font-size: 24px;
+            font-size: 16px;
             font-weight: 900;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
         }
 
-        .activity-item.done {
-            opacity: 0.6;
-            border-left-color: #555;
-        }
-        
-        .activity-item.done .activity-text {
-            text-decoration: line-through;
-            color: #888;
-        }
+        .activity-item.done { opacity: 0.6; border-left-color: #555; }
+        .activity-item.done .activity-text { text-decoration: line-through; color: #888; }
 
         .heading-item {
             background: transparent !important;
             border-left: none !important;
-            border-bottom: 2px solid var(--text-color);
-            padding: 15px 5px 5px 5px !important;
-            font-size: 24px !important;
+            border-bottom: 1px solid var(--text-color);
+            padding: 10px 5px 5px 5px !important;
+            font-size: 18px !important;
             color: var(--gold);
-            text-shadow: 0 0 10px rgba(255,215,0,0.5);
-            margin-top: 15px;
-            box-shadow: none !important;
+            margin-top: 10px;
             opacity: 1 !important;
         }
 
@@ -483,8 +426,7 @@
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(10px);
             z-index: 1000;
         }
 
@@ -493,14 +435,13 @@
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             background: var(--bg-color);
-            border: 3px solid var(--text-color);
-            padding: 30px 20px;
-            width: 95%;
-            max-width: 550px;
-            border-radius: 20px;
-            box-shadow: 0 0 60px rgba(255,255,255,0.3);
+            border: 2px solid var(--text-color);
+            padding: 20px 15px;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 15px;
             z-index: 1001;
-            max-height: 90vh;
+            max-height: 85vh;
             overflow-y: auto;
         }
 
@@ -508,27 +449,23 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid var(--glass-border);
-            padding-bottom: 20px;
-            margin-bottom: 25px;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 15px;
+            margin-bottom: 15px;
         }
 
         .event-list {
             list-style: none;
             padding: 0;
-            margin: 0 0 30px 0;
+            margin: 0 0 20px 0;
         }
 
-        /* Group Creator List */
         .group-creation-label {
             display: flex;
             align-items: center;
-            padding: 15px 10px;
+            padding: 10px;
             border-bottom: 1px solid var(--glass-border);
-            cursor: pointer;
-            transition: background 0.2s;
         }
-        .group-creation-label:hover { background: rgba(255,255,255,0.05); }
 
     </style>
 </head>
@@ -542,15 +479,13 @@
 
     <div id="view-today" class="view active">
         <div class="glass-card">
-            <h1 style="font-size: 40px; margin-bottom: 5px;">Today</h1>
-            <h2 id="today-date-display" style="color: #aaa; font-size: 22px; font-weight: normal; margin-bottom: 30px; text-shadow: none;"></h2>
-            
+            <h1 style="font-size: 32px; margin-bottom: 0;">Today</h1>
+            <h2 id="today-date-display" style="color: #aaa; font-size: 16px; font-weight: normal; margin-bottom: 20px;"></h2>
             <ul id="today-event-list" class="event-list"></ul>
         </div>
     </div>
 
     <div id="view-calendar" class="view">
-        
         <div class="calendar-controls">
             <button class="nav-btn" onclick="changeMonth(-1)">❮</button>
             <div class="date-picker-container">
@@ -569,33 +504,26 @@
             <div class="day-header">Sat</div>
             <div class="day-header">Sun</div>
         </div>
-        <div class="calendar-grid" id="calendar-body">
-            </div>
+        <div class="calendar-grid" id="calendar-body"></div>
 
-        <div class="glass-card" style="margin-top: 40px;">
+        <div class="glass-card" style="margin-top: 25px;">
             <h3>Weekly Routines</h3>
-            <p style="text-align: center; color: #bbb; font-size: 18px; margin-bottom: 30px;">Automate activities for every day of the week.</p>
-            
-            <div style="margin-bottom: 40px;">
-                <h4 style="text-align: left; font-size: 22px; margin-bottom: 20px;">School Term</h4>
+            <div style="margin-bottom: 20px;">
+                <h4 style="text-align: left; margin-bottom: 10px;">School Term</h4>
                 <div class="routine-days" id="school-routine-days"></div>
             </div>
-            
             <div>
-                <h4 style="text-align: left; font-size: 22px; margin-bottom: 20px;">Holiday Term</h4>
+                <h4 style="text-align: left; margin-bottom: 10px;">Holiday Term</h4>
                 <div class="routine-days" id="holiday-routine-days"></div>
             </div>
         </div>
     </div>
 
     <div id="view-admin" class="view">
-        
         <div class="glass-card">
             <h3>Glow Colors</h3>
-            <p style="text-align: center; color: #bbb; font-size: 18px; margin-bottom: 30px;">Select bright neon colors to project glowing borders on the calendar.</p>
-            
             <div class="color-picker-row">
-                <span>School Weekday</span>
+                <span>School Week</span>
                 <input type="color" id="col-school-week" onchange="updateSetting('colSchoolWeek', this.value)">
             </div>
             <div class="color-picker-row">
@@ -603,7 +531,7 @@
                 <input type="color" id="col-school-end" onchange="updateSetting('colSchoolEnd', this.value)">
             </div>
             <div class="color-picker-row">
-                <span>Holiday Weekday</span>
+                <span>Holiday Week</span>
                 <input type="color" id="col-hol-week" onchange="updateSetting('colHolWeek', this.value)">
             </div>
             <div class="color-picker-row">
@@ -614,20 +542,19 @@
 
         <div class="glass-card">
             <h3>Terms & Periods</h3>
-            
-            <h4 style="text-align: left; font-size: 24px; margin-bottom: 20px;">School Terms</h4>
+            <h4 style="text-align: left; margin-bottom: 10px;">School Terms</h4>
             <div id="school-periods-list"></div>
-            <button class="secondary-btn" onclick="addPeriod('school')" style="margin-bottom: 40px; color:var(--text-color); border-color:var(--text-color); text-shadow:none;">+ Add School Term</button>
+            <button class="secondary-btn" onclick="addPeriod('school')" style="margin-bottom: 25px; color:white; border-color:white;">+ Add School Term</button>
 
-            <h4 style="text-align: left; font-size: 24px; margin-bottom: 20px;">Holiday Terms</h4>
+            <h4 style="text-align: left; margin-bottom: 10px;">Holiday Terms</h4>
             <div id="holiday-periods-list"></div>
-            <button class="secondary-btn" onclick="addPeriod('holiday')" style="color:var(--text-color); border-color:var(--text-color); text-shadow:none;">+ Add Holiday Term</button>
+            <button class="secondary-btn" onclick="addPeriod('holiday')" style="color:white; border-color:white;">+ Add Holiday Term</button>
         </div>
 
         <div class="glass-card">
             <h3>Available Activities</h3>
-            <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;">
-                <input type="text" id="new-activity" placeholder="e.g., 20 min Crosstrainer">
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+                <input type="text" id="new-activity" placeholder="e.g., Run 5km">
                 <button class="primary-btn" onclick="addActivityDef()">Add to Options</button>
             </div>
             <div id="activity-list"></div>
@@ -637,15 +564,13 @@
     <div id="modal-overlay" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-header">
-                <h3 id="modal-date-title" style="margin: 0; font-size: 28px;">Date</h3>
+                <h3 id="modal-date-title" style="margin: 0; font-size: 20px;">Date</h3>
                 <button class="icon-btn" onclick="closeModal('modal-overlay')" style="color:white;">✕</button>
             </div>
-            
             <ul id="modal-event-list" class="event-list"></ul>
-            
-            <div style="display: flex; flex-direction: column; gap: 15px;">
-                <button class="secondary-btn" onclick="openGroupModal('date')">+ Group Existing Activities</button>
-                <div style="height: 1px; background: var(--glass-border); margin: 10px 0;"></div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button class="secondary-btn" onclick="openGroupModal('date')">+ Group Activities</button>
+                <div style="height: 1px; background: var(--glass-border); margin: 5px 0;"></div>
                 <select id="modal-activity-select"></select>
                 <button class="primary-btn" onclick="addEventToDate()">Add Single Activity</button>
             </div>
@@ -655,17 +580,13 @@
     <div id="routine-modal-overlay" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-header">
-                <h3 id="routine-modal-title" style="margin: 0; font-size: 28px;">Routine Template</h3>
+                <h3 id="routine-modal-title" style="margin: 0; font-size: 20px;">Routine Template</h3>
                 <button class="icon-btn" onclick="closeModal('routine-modal-overlay')" style="color:white;">✕</button>
             </div>
-            
-            <p style="color:#aaa; text-align:center; font-size:16px; margin-top:-15px; margin-bottom: 20px;">Edit what appears every week. (Tick items off on the main calendar!)</p>
-            
             <ul id="routine-event-list" class="event-list"></ul>
-            
-            <div style="display: flex; flex-direction: column; gap: 15px;">
-                <button class="secondary-btn" onclick="openGroupModal('routine')">+ Group Existing Activities</button>
-                <div style="height: 1px; background: var(--glass-border); margin: 10px 0;"></div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button class="secondary-btn" onclick="openGroupModal('routine')">+ Group Activities</button>
+                <div style="height: 1px; background: var(--glass-border); margin: 5px 0;"></div>
                 <select id="routine-activity-select"></select>
                 <button class="primary-btn" onclick="addRoutineEvent()">Add Single Activity</button>
             </div>
@@ -675,20 +596,14 @@
     <div id="group-modal-overlay" class="modal-overlay" style="z-index: 1010;">
         <div class="modal-box">
             <div class="modal-header">
-                <h3 style="margin: 0; font-size: 26px; color:var(--gold);">Group Activities</h3>
+                <h3 style="margin: 0; font-size: 20px; color:var(--gold);">Group Activities</h3>
                 <button class="icon-btn" onclick="closeModal('group-modal-overlay')" style="color:white;">✕</button>
             </div>
-            
-            <p style="color:#aaa; font-size:15px; margin-top:-10px;">Select the activities currently on this day to pull them under a new heading.</p>
-
-            <div style="display: flex; flex-direction: column; gap: 15px;">
-                <input type="text" id="group-heading-input" placeholder="Heading Name (e.g. Morning:)">
-                
-                <div style="max-height: 35vh; overflow-y: auto; background: rgba(0,0,0,0.5); border-radius: 12px; border: 1px solid var(--glass-border); margin: 10px 0;">
-                    <div id="group-activities-list">
-                        </div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <input type="text" id="group-heading-input" placeholder="Heading (e.g. Morning:)">
+                <div style="max-height: 35vh; overflow-y: auto; background: rgba(0,0,0,0.5); border-radius: 8px; border: 1px solid var(--glass-border);">
+                    <div id="group-activities-list"></div>
                 </div>
-
                 <button class="primary-btn" onclick="saveGroup()" style="background:var(--gold); color:black;">Create Group</button>
             </div>
         </div>
@@ -700,8 +615,7 @@
         let selectedDateStr = "";
         let selectedRoutineType = ""; 
         let selectedRoutineDay = 0; 
-        
-        let groupTargetType = ""; // 'date' or 'routine'
+        let groupTargetType = ""; 
 
         const HEADING_PREFIX = ":::HEADING:::";
         const DONE_PREFIX = ":::DONE:::";
@@ -709,6 +623,7 @@
         const defaultData = {
             events: {}, 
             completedRoutines: {}, 
+            skippedRoutines: {}, // NEW: Tracks routines skipped for specific days
             activities: ["Morning Stretch", "Cardio", "Weight Lifting", "Homework", "Rest Day"],
             settings: {
                 colSchoolWeek: "#00f3ff", colSchoolEnd: "#00ff66",
@@ -723,9 +638,10 @@
 
         let appData = JSON.parse(localStorage.getItem("joeysCalendar")) || defaultData;
         
-        // Data Migration Safeguards
+        // Data Migrations
         if(!appData.events) appData.events = {};
         if(!appData.completedRoutines) appData.completedRoutines = {};
+        if(!appData.skippedRoutines) appData.skippedRoutines = {};
         if(!appData.activities) appData.activities = defaultData.activities;
         if(!appData.settings) appData.settings = defaultData.settings;
         if(!appData.routines) appData.routines = defaultData.routines;
@@ -741,7 +657,7 @@
             renderCalendar();
             renderRoutines();
             renderAdminActivities();
-            renderToday(); // Render Today on load
+            renderToday(); 
         };
 
         function saveData() { localStorage.setItem("joeysCalendar", JSON.stringify(appData)); }
@@ -779,7 +695,7 @@
             return "#333333"; 
         }
 
-        // --- NEW: Today View Rendering ---
+        // --- TODAY VIEW ---
         function renderToday() {
             let t = new Date();
             let y = t.getFullYear();
@@ -798,23 +714,28 @@
             else if (isDateInPeriods(t, appData.settings.schoolPeriods)) rEvts = appData.routines.school[dWk] || [];
             
             let sEvts = appData.events[todayStr] || [];
+            let skippedIndices = appData.skippedRoutines[todayStr] || [];
             
-            if (rEvts.length === 0 && sEvts.length === 0) {
-                list.innerHTML = "<li style='color:#888; font-size:24px; text-align:center; padding: 40px 0;'>Free day! No activities today.</li>";
+            // Check if there are ANY non-skipped items
+            let hasRoutineItems = rEvts.some((e, i) => !skippedIndices.includes(i));
+            if (!hasRoutineItems && sEvts.length === 0) {
+                list.innerHTML = "<li style='color:#888; font-size:16px; text-align:center; padding: 20px 0;'>Free day! No activities today.</li>";
                 return;
             }
 
             let completedRoutineIndices = appData.completedRoutines[todayStr] || [];
 
-            // Render Routine Items (Tickable, No Remove Button)
+            // Routines
             rEvts.forEach((evt, i) => {
+                if (skippedIndices.includes(i)) return; // Don't show skipped items
+
                 let li = document.createElement("li");
                 let isHeading = evt.startsWith(HEADING_PREFIX);
                 let isDone = completedRoutineIndices.includes(i);
                 
                 if (isHeading) {
                     li.className = "activity-item heading-item";
-                    li.innerHTML = `<span>${evt.replace(HEADING_PREFIX, "")}</span>`;
+                    li.innerHTML = `<span>${evt.replace(HEADING_PREFIX, "")}</span> <button class="icon-btn" onclick="skipRoutineEvent(${i}, '${todayStr}')">✕</button>`;
                 } else {
                     li.className = "activity-item" + (isDone ? " done" : "");
                     li.style.borderLeftColor = "#888";
@@ -823,12 +744,13 @@
                             <input type="checkbox" class="neon-checkbox" ${isDone ? 'checked' : ''} onchange="toggleRoutineEvent(${i}, '${todayStr}')">
                             <span class="activity-text">↻ ${evt}</span>
                         </div>
+                        <button class="icon-btn" onclick="skipRoutineEvent(${i}, '${todayStr}')">✕</button>
                     `;
                 }
                 list.appendChild(li);
             });
 
-            // Render Specific Items (Tickable, No Remove Button)
+            // Specifics
             sEvts.forEach((evt, i) => {
                 let li = document.createElement("li");
                 let isHeading = evt.startsWith(HEADING_PREFIX);
@@ -837,7 +759,7 @@
 
                 if (isHeading) {
                     li.className = "activity-item heading-item";
-                    li.innerHTML = `<span>${displayText}</span>`;
+                    li.innerHTML = `<span>${displayText}</span> <button class="icon-btn" onclick="removeEvent(${i}, '${todayStr}')">✕</button>`;
                 } else {
                     li.className = "activity-item" + (isDone ? " done" : "");
                     li.innerHTML = `
@@ -845,13 +767,14 @@
                             <input type="checkbox" class="neon-checkbox" ${isDone ? 'checked' : ''} onchange="toggleSpecificEvent(${i}, '${todayStr}')">
                             <span class="activity-text">${displayText}</span>
                         </div>
+                        <button class="icon-btn" onclick="removeEvent(${i}, '${todayStr}')">✕</button>
                     `;
                 }
                 list.appendChild(li);
             });
         }
 
-        // --- Calendar Rendering (Mon - Sun) ---
+        // --- CALENDAR ---
         function changeMonth(dir) {
             currentDate.setMonth(currentDate.getMonth() + dir);
             renderCalendar();
@@ -883,7 +806,6 @@
             const body = document.getElementById("calendar-body");
             body.innerHTML = "";
 
-            // Empty slots
             for (let i = 0; i < emptyDays; i++) {
                 body.appendChild(document.createElement("div"));
             }
@@ -897,7 +819,7 @@
                 
                 if(glowColor !== "#333333") {
                     dayDiv.style.borderColor = glowColor;
-                    dayDiv.style.boxShadow = `0 0 25px ${glowColor}, inset 0 0 15px ${glowColor}`;
+                    dayDiv.style.boxShadow = `0 0 15px ${glowColor}, inset 0 0 10px ${glowColor}`;
                 }
 
                 if (year === today.getFullYear() && month === today.getMonth() && i === today.getDate()) {
@@ -909,7 +831,6 @@
                 
                 dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
                 
-                // Fetch Routines
                 let dayRoutines = [];
                 if (isDateInPeriods(currentDayObj, appData.settings.holidayPeriods)) {
                     dayRoutines = appData.routines.holiday[dayOfWeek] || [];
@@ -918,11 +839,17 @@
                 }
                 
                 let completedRoutineIndices = appData.completedRoutines[dateStr] || [];
+                let skippedIndices = appData.skippedRoutines[dateStr] || [];
 
-                let dayRoutinesObj = dayRoutines.map((e, index) => ({
-                    text: e,
-                    done: completedRoutineIndices.includes(index)
-                }));
+                let dayRoutinesObj = [];
+                dayRoutines.forEach((e, index) => {
+                    if(!skippedIndices.includes(index)) {
+                        dayRoutinesObj.push({
+                            text: e,
+                            done: completedRoutineIndices.includes(index)
+                        });
+                    }
+                });
 
                 let specificEventsObj = (appData.events[dateStr] || []).map(e => ({
                     text: e.startsWith(DONE_PREFIX) ? e.replace(DONE_PREFIX, "") : e,
@@ -954,9 +881,9 @@
             }
         }
 
-        // --- Weekly Routines UI (Mon - Sun) ---
+        // --- WEEKLY ROUTINES ---
         function renderRoutines() {
-            const dayOrder = [1, 2, 3, 4, 5, 6, 0]; // Mon-Sun
+            const dayOrder = [1, 2, 3, 4, 5, 6, 0]; 
             ["school", "holiday"].forEach(type => {
                 let container = document.getElementById(`${type}-routine-days`);
                 container.innerHTML = "";
@@ -977,7 +904,7 @@
             });
         }
 
-        // --- Modals ---
+        // --- MODALS ---
         function closeModal(id) { document.getElementById(id).style.display = "none"; }
 
         function openRoutineModal(type, dayIndex) {
@@ -993,7 +920,7 @@
             let list = document.getElementById("routine-event-list");
             list.innerHTML = "";
             let routines = appData.routines[selectedRoutineType][selectedRoutineDay];
-            if (routines.length === 0) return list.innerHTML = "<li style='color:#888; font-size:20px; text-align:center;'>No routine items set.</li>";
+            if (routines.length === 0) return list.innerHTML = "<li style='color:#888; font-size:16px; text-align:center;'>No routine items set.</li>";
             
             routines.forEach((evt, i) => {
                 let li = document.createElement("li");
@@ -1026,20 +953,26 @@
             else if (isDateInPeriods(dObj, appData.settings.schoolPeriods)) rEvts = appData.routines.school[dWk] || [];
             
             let sEvts = appData.events[selectedDateStr] || [];
+            let skippedIndices = appData.skippedRoutines[selectedDateStr] || [];
             
-            if (rEvts.length===0 && sEvts.length===0) return list.innerHTML = "<li style='color:#888; font-size:22px; text-align:center;'>Free day! No activities.</li>";
+            let hasRoutineItems = rEvts.some((e, i) => !skippedIndices.includes(i));
+            if (!hasRoutineItems && sEvts.length === 0) {
+                return list.innerHTML = "<li style='color:#888; font-size:16px; text-align:center;'>Free day! No activities.</li>";
+            }
 
             let completedRoutineIndices = appData.completedRoutines[selectedDateStr] || [];
 
-            // Render Routine Items
+            // Routines
             rEvts.forEach((evt, i) => {
+                if (skippedIndices.includes(i)) return; 
+
                 let li = document.createElement("li");
                 let isHeading = evt.startsWith(HEADING_PREFIX);
                 let isDone = completedRoutineIndices.includes(i);
                 
                 if (isHeading) {
                     li.className = "activity-item heading-item";
-                    li.innerHTML = `<span>${evt.replace(HEADING_PREFIX, "")}</span>`;
+                    li.innerHTML = `<span>${evt.replace(HEADING_PREFIX, "")}</span> <button class="icon-btn" onclick="skipRoutineEvent(${i}, '${selectedDateStr}')">✕</button>`;
                 } else {
                     li.className = "activity-item" + (isDone ? " done" : "");
                     li.style.borderLeftColor = "#888";
@@ -1048,12 +981,13 @@
                             <input type="checkbox" class="neon-checkbox" ${isDone ? 'checked' : ''} onchange="toggleRoutineEvent(${i}, '${selectedDateStr}')">
                             <span class="activity-text">↻ ${evt}</span>
                         </div>
+                        <button class="icon-btn" onclick="skipRoutineEvent(${i}, '${selectedDateStr}')">✕</button>
                     `;
                 }
                 list.appendChild(li);
             });
 
-            // Render Specific Items
+            // Specifics
             sEvts.forEach((evt, i) => {
                 let li = document.createElement("li");
                 let isHeading = evt.startsWith(HEADING_PREFIX);
@@ -1062,7 +996,7 @@
 
                 if (isHeading) {
                     li.className = "activity-item heading-item";
-                    li.innerHTML = `<span>${displayText}</span> <button class="icon-btn" onclick="removeEvent(${i})">✕</button>`;
+                    li.innerHTML = `<span>${displayText}</span> <button class="icon-btn" onclick="removeEvent(${i}, '${selectedDateStr}')">✕</button>`;
                 } else {
                     li.className = "activity-item" + (isDone ? " done" : "");
                     li.innerHTML = `
@@ -1070,18 +1004,17 @@
                             <input type="checkbox" class="neon-checkbox" ${isDone ? 'checked' : ''} onchange="toggleSpecificEvent(${i}, '${selectedDateStr}')">
                             <span class="activity-text">${displayText}</span>
                         </div>
-                        <button class="icon-btn" onclick="removeEvent(${i})">✕</button>
+                        <button class="icon-btn" onclick="removeEvent(${i}, '${selectedDateStr}')">✕</button>
                     `;
                 }
                 list.appendChild(li);
             });
         }
 
-        // --- Group Creator Logic ---
+        // --- GROUP CREATOR ---
         function openGroupModal(type) {
             groupTargetType = type;
             document.getElementById("group-heading-input").value = "";
-            
             let list = document.getElementById("group-activities-list");
             list.innerHTML = "";
             
@@ -1100,123 +1033,108 @@
                     let label = document.createElement("label");
                     label.className = "group-creation-label";
                     label.innerHTML = `
-                        <input type="checkbox" class="neon-checkbox" value="${i}" style="width: 28px; height: 28px; margin-right: 15px;">
-                        <span style="font-size: 20px; font-weight: bold; flex-grow: 1;">${displayText}</span>
+                        <input type="checkbox" class="neon-checkbox" value="${i}" style="width: 24px; height: 24px; margin-right: 10px;">
+                        <span style="font-size: 16px; font-weight: bold; flex-grow: 1;">${displayText}</span>
                     `;
                     list.appendChild(label);
                 }
             });
             
-            if (!hasItems) {
-                list.innerHTML = "<div style='padding:20px; color:#aaa; text-align:center; font-size:18px;'>No individual activities to group. Add some activities first!</div>";
-            }
-
+            if (!hasItems) list.innerHTML = "<div style='padding:15px; color:#aaa; text-align:center; font-size:14px;'>Add some activities first to group them!</div>";
             document.getElementById("group-modal-overlay").style.display = "block";
         }
 
         function saveGroup() {
-            let headingText = document.getElementById("group-heading-input").value.trim();
-            if(!headingText) headingText = "Group";
-            
+            let headingText = document.getElementById("group-heading-input").value.trim() || "Group";
             let checkboxes = document.querySelectorAll("#group-activities-list input[type='checkbox']:checked");
             
-            let sourceArray = [];
-            if(groupTargetType === 'date') {
-                sourceArray = appData.events[selectedDateStr] || [];
-            } else {
-                sourceArray = appData.routines[selectedRoutineType][selectedRoutineDay] || [];
-            }
+            let sourceArray = groupTargetType === 'date' ? (appData.events[selectedDateStr] || []) : (appData.routines[selectedRoutineType][selectedRoutineDay] || []);
 
             if (checkboxes.length === 0) {
-                if(groupTargetType === 'date' && !appData.events[selectedDateStr]) {
-                    appData.events[selectedDateStr] = [];
-                    sourceArray = appData.events[selectedDateStr];
-                }
+                if(groupTargetType === 'date' && !appData.events[selectedDateStr]) appData.events[selectedDateStr] = sourceArray = [];
                 sourceArray.push(HEADING_PREFIX + headingText);
             } else {
                 let selectedIndices = Array.from(checkboxes).map(cb => parseInt(cb.value)).sort((a,b) => a - b);
                 let insertIndex = selectedIndices[0]; 
                 let extractedItems = selectedIndices.map(i => sourceArray[i]);
 
-                for (let i = selectedIndices.length - 1; i >= 0; i--) {
-                    sourceArray.splice(selectedIndices[i], 1);
-                }
-
-                let itemsToInsert = [HEADING_PREFIX + headingText, ...extractedItems];
-                sourceArray.splice(insertIndex, 0, ...itemsToInsert);
+                for (let i = selectedIndices.length - 1; i >= 0; i--) sourceArray.splice(selectedIndices[i], 1);
+                sourceArray.splice(insertIndex, 0, HEADING_PREFIX + headingText, ...extractedItems);
             }
             
             if(groupTargetType === 'date') {
                 appData.events[selectedDateStr] = sourceArray;
                 let p = selectedDateStr.split('-');
                 renderModalEvents(new Date(p[0], p[1]-1, p[2]));
-                renderCalendar();
-            } else if (groupTargetType === 'routine') {
+            } else {
                 appData.routines[selectedRoutineType][selectedRoutineDay] = sourceArray;
                 renderRoutineEventsList(); 
                 renderRoutines(); 
-                renderCalendar();
             }
             
             saveData();
+            renderCalendar();
             closeModal("group-modal-overlay");
         }
 
-        // --- Checkbox Toggling ---
+        // --- DELETIONS & TOGGLING ---
+        function skipRoutineEvent(index, dateStr) {
+            let targetDate = dateStr || selectedDateStr;
+            if(!appData.skippedRoutines[targetDate]) appData.skippedRoutines[targetDate] = [];
+            appData.skippedRoutines[targetDate].push(index);
+            saveData();
+            refreshViews(targetDate);
+        }
+
         function toggleRoutineEvent(index, dateStr) {
             let targetDate = dateStr || selectedDateStr;
             if(!appData.completedRoutines[targetDate]) appData.completedRoutines[targetDate] = [];
             let cr = appData.completedRoutines[targetDate];
             let pos = cr.indexOf(index);
-            if(pos > -1) {
-                cr.splice(pos, 1); 
-            } else {
-                cr.push(index);   
-            }
+            if(pos > -1) cr.splice(pos, 1); 
+            else cr.push(index);   
             saveData();
-            
-            let p = targetDate.split('-');
-            if (document.getElementById('view-calendar').classList.contains('active') || document.getElementById('modal-overlay').style.display === 'block') {
-                renderModalEvents(new Date(p[0], p[1]-1, p[2]));
-            }
-            if (document.getElementById('view-today').classList.contains('active')) {
-                renderToday();
-            }
-            renderCalendar();
+            refreshViews(targetDate);
         }
 
         function toggleSpecificEvent(index, dateStr) {
             let targetDate = dateStr || selectedDateStr;
             let evt = appData.events[targetDate][index];
-            if (evt.startsWith(DONE_PREFIX)) {
-                appData.events[targetDate][index] = evt.replace(DONE_PREFIX, ""); 
-            } else {
-                appData.events[targetDate][index] = DONE_PREFIX + evt; 
-            }
+            if (evt.startsWith(DONE_PREFIX)) appData.events[targetDate][index] = evt.replace(DONE_PREFIX, ""); 
+            else appData.events[targetDate][index] = DONE_PREFIX + evt; 
             saveData();
-            
+            refreshViews(targetDate);
+        }
+
+        function removeEvent(i, dateStr) {
+            let targetDate = dateStr || selectedDateStr;
+            appData.events[targetDate].splice(i,1); 
+            if(appData.events[targetDate].length===0) delete appData.events[targetDate];
+            saveData();
+            refreshViews(targetDate);
+        }
+
+        function removeRoutineEvent(i) {
+            appData.routines[selectedRoutineType][selectedRoutineDay].splice(i,1); 
+            saveData(); 
+            renderRoutineEventsList(); 
+            renderRoutines(); 
+            renderCalendar(); 
+        }
+
+        function refreshViews(targetDate) {
             let p = targetDate.split('-');
             if (document.getElementById('view-calendar').classList.contains('active') || document.getElementById('modal-overlay').style.display === 'block') {
                 renderModalEvents(new Date(p[0], p[1]-1, p[2]));
             }
-            if (document.getElementById('view-today').classList.contains('active')) {
-                renderToday();
-            }
+            if (document.getElementById('view-today').classList.contains('active')) renderToday();
             renderCalendar();
-        }
-
-        // --- Data Mutations ---
-        function populateSelect(id) {
-            let sel = document.getElementById(id);
-            sel.innerHTML = "";
-            appData.activities.forEach(a => sel.add(new Option(a, a)));
         }
 
         function addRoutineEvent() {
             let v = document.getElementById("routine-activity-select").value;
             if(v) { appData.routines[selectedRoutineType][selectedRoutineDay].push(v); saveData(); renderRoutineEventsList(); renderRoutines(); renderCalendar(); }
         }
-        function removeRoutineEvent(i) { appData.routines[selectedRoutineType][selectedRoutineDay].splice(i,1); saveData(); renderRoutineEventsList(); renderRoutines(); renderCalendar(); }
 
         function addEventToDate() {
             let v = document.getElementById("modal-activity-select").value;
@@ -1227,15 +1145,14 @@
                 renderModalEvents(new Date(p[0], p[1]-1, p[2])); renderCalendar();
             }
         }
-        function removeEvent(i) {
-            appData.events[selectedDateStr].splice(i,1); 
-            if(appData.events[selectedDateStr].length===0) delete appData.events[selectedDateStr];
-            saveData();
-            let p = selectedDateStr.split('-');
-            renderModalEvents(new Date(p[0], p[1]-1, p[2])); renderCalendar();
+
+        function populateSelect(id) {
+            let sel = document.getElementById(id);
+            sel.innerHTML = "";
+            appData.activities.forEach(a => sel.add(new Option(a, a)));
         }
 
-        // --- Admin UI ---
+        // --- ADMIN ---
         function updateSetting(key, val) {
             appData.settings[key] = val;
             saveData();
@@ -1256,17 +1173,16 @@
             let list = document.getElementById(`${type}-periods-list`);
             list.innerHTML = "";
             let arr = appData.settings[`${type}Periods`];
-            
             arr.forEach((p, i) => {
                 let row = document.createElement("div");
                 row.className = "term-row";
                 row.innerHTML = `
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:20px; font-weight:800;">Term ${i+1}</span>
+                        <span style="font-size:16px; font-weight:800;">Term ${i+1}</span>
                         <button class="icon-btn" onclick="removePeriod('${type}', ${i})">✕</button>
                     </div>
                     <input type="date" value="${p.start}" onchange="updatePeriod('${type}', ${i}, 'start', this.value)">
-                    <div style="text-align:center; font-weight:900; color:#aaa;">TO</div>
+                    <div style="text-align:center; font-weight:900; color:#aaa; font-size:12px;">TO</div>
                     <input type="date" value="${p.end}" onchange="updatePeriod('${type}', ${i}, 'end', this.value)">
                 `;
                 list.appendChild(row);
@@ -1275,8 +1191,7 @@
 
         function addPeriod(type) {
             appData.settings[`${type}Periods`].push({start: "", end: ""});
-            saveData();
-            renderPeriodsList(type);
+            saveData(); renderPeriodsList(type);
         }
 
         function updatePeriod(type, index, field, value) {
@@ -1288,8 +1203,7 @@
 
         function removePeriod(type, index) {
             appData.settings[`${type}Periods`].splice(index, 1);
-            saveData();
-            renderPeriodsList(type);
+            saveData(); renderPeriodsList(type);
             if (document.getElementById('view-today').classList.contains('active')) renderToday();
             renderCalendar();
         }
@@ -1300,6 +1214,7 @@
             appData.activities.forEach((act, i) => {
                 let li = document.createElement("div");
                 li.className = "activity-item";
+                li.style.borderLeftColor = "transparent";
                 li.innerHTML = `<span>${act}</span> <button class="icon-btn" onclick="removeActivityDef(${i})">✕</button>`;
                 list.appendChild(li);
             });
@@ -1311,15 +1226,13 @@
             if (v && !appData.activities.includes(v)) {
                 appData.activities.push(v);
                 input.value = "";
-                saveData();
-                renderAdminActivities();
+                saveData(); renderAdminActivities();
             }
         }
 
         function removeActivityDef(i) {
             appData.activities.splice(i, 1);
-            saveData();
-            renderAdminActivities();
+            saveData(); renderAdminActivities();
         }
     </script>
 </body>
